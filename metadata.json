@@ -1,0 +1,6 @@
+{
+  "name": "Folio - Minimalist Novel Reading UI Kit",
+  "description": "A premium, modern minimalist novel reading app UI kit featuring 7 meticulously crafted screens, e-ink typography, ambient audio player, and generative scene studio.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

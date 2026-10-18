@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   ArrowLeft,
+  ChevronRight,
   Moon,
   Sun,
   Type,
@@ -13,16 +14,11 @@ import {
   Volume2,
   Play,
   Square,
-  Sparkles,
-  Sliders,
   Flame,
   CloudRain,
   Waves,
-  ShieldCheck,
-  HardDrive,
   FileText,
-  Clock,
-  Compass
+  Info
 } from 'lucide-react';
 
 interface ScreenSettingsProps {
@@ -31,18 +27,51 @@ interface ScreenSettingsProps {
   onToggleDarkMode: () => void;
 }
 
+export type SettingsPageId = 'main' | 'appearance' | 'reader' | 'download' | 'tts' | 'data' | 'about';
+
+interface ToggleSwitchProps {
+  checked: boolean;
+  onChange: () => void;
+  ariaLabel: string;
+  isDark: boolean;
+}
+
+const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ checked, onChange, ariaLabel, isDark }) => (
+  <button
+    type="button"
+    role="switch"
+    aria-checked={checked}
+    aria-label={ariaLabel}
+    onClick={onChange}
+    className={`w-11 h-6 rounded-full inline-flex items-center shrink-0 cursor-pointer transition-colors duration-200 border relative ${
+      checked
+        ? isDark
+          ? 'bg-amber-500 border-amber-500'
+          : 'bg-stone-900 border-stone-900'
+        : isDark
+        ? 'bg-stone-800/80 border-stone-700/80'
+        : 'bg-stone-200 border-stone-300'
+    }`}
+  >
+    <span
+      className={`w-4.5 h-4.5 rounded-full bg-white shadow-2xs transition-transform duration-200 ease-in-out transform ${
+        checked ? 'translate-x-[22px]' : 'translate-x-[2px]'
+      }`}
+    />
+  </button>
+);
+
 export const ScreenSettings: React.FC<ScreenSettingsProps> = ({
   onBack,
   isDark,
   onToggleDarkMode,
 }) => {
-  // Navigation inside hub
-  const [activeSection, setActiveSection] = useState<'all' | 'appearance' | 'reader' | 'download' | 'tts'>('all');
+  // Navigation stack state inside settings
+  const [currentPage, setCurrentPage] = useState<SettingsPageId>('main');
 
   // Appearance State
   const [highContrast, setHighContrast] = useState(false);
   const [paperTexture, setPaperTexture] = useState(true);
-  const [accentColor, setAccentColor] = useState<'amber' | 'sage' | 'ink'>('amber');
 
   // Reader Typography State
   const [defaultFont, setDefaultFont] = useState<'serif' | 'display' | 'sans' | 'mono'>('serif');
@@ -50,15 +79,12 @@ export const ScreenSettings: React.FC<ScreenSettingsProps> = ({
   const [lineSpacing, setLineSpacing] = useState<'relaxed' | 'normal' | 'loose'>('relaxed');
   const [pageTurnStyle, setPageTurnStyle] = useState<'paginated' | 'scroll'>('paginated');
   const [keepAwake, setKeepAwake] = useState(true);
-  const [autoBookmark, setAutoBookmark] = useState(true);
 
   // Download & Storage State
   const [autoDownloadWifi, setAutoDownloadWifi] = useState(true);
-  const [offlinePrecache, setOfflinePrecache] = useState(true);
   const [cacheCleared, setCacheCleared] = useState(false);
-  const [notesExported, setNotesExported] = useState(false);
 
-  // TTS (Text-to-Speech) State
+  // TTS & Audio State
   const [ttsVoice, setTtsVoice] = useState<'clara' | 'erik' | 'kenji' | 'system'>('clara');
   const [ttsSpeed, setTtsSpeed] = useState<number>(1.0);
   const [ttsPitch, setTtsPitch] = useState<'warm' | 'balanced' | 'crisp'>('warm');
@@ -66,8 +92,9 @@ export const ScreenSettings: React.FC<ScreenSettingsProps> = ({
   const [autoAdvanceChapter, setAutoAdvanceChapter] = useState(true);
   const [isPlayingTTSPreview, setIsPlayingTTSPreview] = useState(false);
 
-  // Reading Goal
+  // Data & Goals
   const [readingGoal, setReadingGoal] = useState<number>(25);
+  const [notesExported, setNotesExported] = useState(false);
 
   const handleClearCache = () => {
     setCacheCleared(true);
@@ -113,12 +140,48 @@ export const ScreenSettings: React.FC<ScreenSettingsProps> = ({
     }
   };
 
-  const scrollToSection = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
+  // Sub-page top header: tab name in minimal non-bold font
+  const renderSubPageHeader = (title: string) => (
+    <header
+      className={`px-4 pt-3 pb-3 border-b sticky top-0 backdrop-blur-md z-20 flex items-center justify-between ${
+        isDark
+          ? 'bg-[#000000]/90 border-neutral-900/60 text-stone-100'
+          : 'bg-[#FAF8F5]/90 border-stone-200/50 text-stone-900'
+      }`}
+    >
+      <div className="flex items-center gap-2.5">
+        <button
+          type="button"
+          onClick={() => setCurrentPage('main')}
+          aria-label="Back to Settings"
+          className={`min-h-[34px] min-w-[34px] flex items-center justify-center rounded-lg border transition-all shadow-2xs cursor-pointer ${
+            isDark
+              ? 'border-stone-800 bg-stone-900/80 text-stone-300 hover:border-stone-700 hover:text-stone-100'
+              : 'border-stone-300/80 bg-white/80 text-stone-700 hover:border-stone-400 hover:text-stone-900'
+          }`}
+        >
+          <ArrowLeft className="w-4 h-4 stroke-[2]" />
+        </button>
+        <h1 className={`text-base font-mono font-normal tracking-tight ${isDark ? 'text-stone-100' : 'text-stone-950'}`}>
+          {title}
+        </h1>
+      </div>
+
+      <button
+        type="button"
+        onClick={onToggleDarkMode}
+        aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+        className={`min-h-[34px] px-2.5 text-xs font-mono font-normal rounded-lg flex items-center gap-1.5 transition-all border shadow-2xs cursor-pointer ${
+          isDark
+            ? 'border-stone-800 bg-stone-900/80 text-amber-400 hover:border-stone-700'
+            : 'border-stone-300/80 bg-white/80 text-stone-700 hover:border-stone-400'
+        }`}
+      >
+        {isDark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+        <span className="text-[11px]">{isDark ? 'Dark' : 'Light'}</span>
+      </button>
+    </header>
+  );
 
   return (
     <div
@@ -126,188 +189,256 @@ export const ScreenSettings: React.FC<ScreenSettingsProps> = ({
         isDark ? 'bg-[#000000] text-stone-100' : 'bg-[#FAF8F5] text-stone-900'
       }`}
     >
-      {/* Top Header with Preferences Title */}
-      <header
-        className={`px-4 py-3 border-b sticky top-0 backdrop-blur-md z-10 flex items-center justify-between ${
-          isDark
-            ? 'bg-[#000000]/90 border-neutral-900 text-stone-100'
-            : 'bg-[#FAF8F5]/90 border-stone-200/70 text-stone-900'
-        }`}
-      >
-        <div className="flex items-center gap-2">
-          {onBack && (
-            <button
-              type="button"
-              onClick={onBack}
-              aria-label="Back"
-              className={`min-h-[40px] min-w-[40px] flex items-center justify-center rounded-full transition-colors ${
-                isDark ? 'hover:bg-stone-800 text-stone-300' : 'hover:bg-stone-200/60 text-stone-700'
-              }`}
-            >
-              <ArrowLeft className="w-4 h-4 stroke-[2]" />
-            </button>
-          )}
-          <div>
-            <span
-              className={`text-[10px] font-mono uppercase tracking-widest block ${
-                isDark ? 'text-amber-400' : 'text-stone-400'
-              }`}
-            >
-              Atelier Hub
-            </span>
-            <h1 className="text-xl font-serif font-semibold tracking-tight">
-              Preferences
-            </h1>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          onClick={onToggleDarkMode}
-          aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-          className={`min-h-[36px] px-3 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-colors border ${
-            isDark
-              ? 'bg-stone-900 border-stone-800 text-amber-400 hover:bg-stone-800'
-              : 'bg-white border-stone-200 text-stone-700 hover:bg-stone-100'
-          }`}
-        >
-          {isDark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
-          <span>{isDark ? 'Dark' : 'Light'}</span>
-        </button>
-      </header>
-
-      <div className="px-4 py-4 space-y-6 max-w-lg mx-auto w-full">
-        {/* Hub Overview Banner */}
-        <section
-          className={`border rounded-2xl p-4 transition-all shadow-sm ${
-            isDark
-              ? 'bg-gradient-to-br from-[#1C1C22] to-[#141418] border-stone-800'
-              : 'bg-gradient-to-br from-white to-[#F6F2EA] border-stone-200/90'
-          }`}
-        >
-          <div className="flex items-center justify-between mb-2">
-            <span className={`text-[10px] font-mono uppercase tracking-wider ${isDark ? 'text-amber-400' : 'text-amber-800'}`}>
-              Settings & Customization Hub
-            </span>
-            <span className={`text-[10px] font-mono ${isDark ? 'text-stone-400' : 'text-stone-400'}`}>
-              4 Hub Categories
-            </span>
-          </div>
-
-          <p className={`text-xs leading-relaxed ${isDark ? 'text-stone-300' : 'text-stone-600'}`}>
-            Fine-tune sensory reading parameters, typography geometry, offline monograph cache, and ambient text-to-speech narration.
-          </p>
-
-          {/* Hub Quick Jump Grid */}
-          <div className="grid grid-cols-2 gap-2 mt-3.5 pt-3 border-t border-current/10">
-            <button
-              type="button"
-              onClick={() => scrollToSection('sec-appearance')}
-              className={`p-2.5 rounded-xl border text-left transition-all flex items-center gap-2.5 group ${
-                isDark ? 'bg-stone-900/60 border-stone-800 hover:border-amber-400/50' : 'bg-white/80 border-stone-200 hover:border-stone-400'
-              }`}
-            >
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isDark ? 'bg-amber-400/10 text-amber-400' : 'bg-stone-100 text-stone-800'}`}>
-                <Palette className="w-4 h-4" />
-              </div>
-              <div className="min-w-0">
-                <span className="text-xs font-semibold block truncate">Appearance</span>
-                <span className={`text-[10px] block truncate ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
-                  {isDark ? 'Obsidian Night' : 'Alabaster Paper'}
-                </span>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => scrollToSection('sec-reader')}
-              className={`p-2.5 rounded-xl border text-left transition-all flex items-center gap-2.5 group ${
-                isDark ? 'bg-stone-900/60 border-stone-800 hover:border-amber-400/50' : 'bg-white/80 border-stone-200 hover:border-stone-400'
-              }`}
-            >
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isDark ? 'bg-amber-400/10 text-amber-400' : 'bg-stone-100 text-stone-800'}`}>
-                <Type className="w-4 h-4" />
-              </div>
-              <div className="min-w-0">
-                <span className="text-xs font-semibold block truncate">Reader</span>
-                <span className={`text-[10px] block truncate ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
-                  Newsreader · {fontSize}pt
-                </span>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => scrollToSection('sec-download')}
-              className={`p-2.5 rounded-xl border text-left transition-all flex items-center gap-2.5 group ${
-                isDark ? 'bg-stone-900/60 border-stone-800 hover:border-amber-400/50' : 'bg-white/80 border-stone-200 hover:border-stone-400'
-              }`}
-            >
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isDark ? 'bg-amber-400/10 text-amber-400' : 'bg-stone-100 text-stone-800'}`}>
-                <Download className="w-4 h-4" />
-              </div>
-              <div className="min-w-0">
-                <span className="text-xs font-semibold block truncate">Download</span>
-                <span className={`text-[10px] block truncate ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
-                  142 MB Cached
-                </span>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => scrollToSection('sec-tts')}
-              className={`p-2.5 rounded-xl border text-left transition-all flex items-center gap-2.5 group ${
-                isDark ? 'bg-stone-900/60 border-stone-800 hover:border-amber-400/50' : 'bg-white/80 border-stone-200 hover:border-stone-400'
-              }`}
-            >
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isDark ? 'bg-amber-400/10 text-amber-400' : 'bg-stone-100 text-stone-800'}`}>
-                <Headphones className="w-4 h-4" />
-              </div>
-              <div className="min-w-0">
-                <span className="text-xs font-semibold block truncate">TTS & Audio</span>
-                <span className={`text-[10px] block truncate ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
-                  Clara · {ttsSpeed}x Speed
-                </span>
-              </div>
-            </button>
-          </div>
-        </section>
-
-        {/* ============================================================ */}
-        {/* HUB SECTION 1: APPEARANCE */}
-        {/* ============================================================ */}
-        <section id="sec-appearance" className="pt-2">
-          <div className="flex items-center gap-2 mb-2.5">
-            <Palette className={`w-4 h-4 ${isDark ? 'text-amber-400' : 'text-amber-800'}`} />
-            <h2 className="text-sm font-serif font-semibold">Appearance & Atmosphere</h2>
-          </div>
-
-          <div
-            className={`rounded-2xl border divide-y overflow-hidden shadow-2xs ${
-              isDark ? 'bg-[#18181C] border-stone-800 divide-stone-800/80' : 'bg-white border-stone-200/90 divide-stone-100'
+      {/* ========================================================================= */}
+      {/* 1. MAIN SETTINGS ROOT HUB (Navigation Menu to Individual Pages)          */}
+      {/* ========================================================================= */}
+      {currentPage === 'main' && (
+        <>
+          {/* Main Top Header matching Library & Downloads header style */}
+          <header
+            className={`px-4 pt-3 pb-3 border-b sticky top-0 backdrop-blur-md z-20 flex items-center justify-between ${
+              isDark
+                ? 'bg-[#000000]/90 border-neutral-900/60 text-stone-100'
+                : 'bg-[#FAF8F5]/90 border-stone-200/50 text-stone-900'
             }`}
           >
+            <div className="flex items-center gap-2.5">
+              {onBack && (
+                <button
+                  type="button"
+                  onClick={onBack}
+                  aria-label="Back to Library"
+                  className={`min-h-[34px] min-w-[34px] flex items-center justify-center rounded-lg border transition-all shadow-2xs cursor-pointer ${
+                    isDark
+                      ? 'border-stone-800 bg-stone-900/80 text-stone-300 hover:border-stone-700 hover:text-stone-100'
+                      : 'border-stone-300/80 bg-white/80 text-stone-700 hover:border-stone-400 hover:text-stone-900'
+                  }`}
+                >
+                  <ArrowLeft className="w-4 h-4 stroke-[2]" />
+                </button>
+              )}
+              <h1 className={`text-xl font-serif font-normal tracking-tight ${isDark ? 'text-stone-100' : 'text-stone-950'}`}>
+                Settings
+              </h1>
+            </div>
+
+            <button
+              type="button"
+              onClick={onToggleDarkMode}
+              aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+              className={`min-h-[34px] px-2.5 text-xs font-mono font-normal rounded-lg flex items-center gap-1.5 transition-all border shadow-2xs cursor-pointer ${
+                isDark
+                  ? 'border-stone-800 bg-stone-900/80 text-amber-400 hover:border-stone-700'
+                  : 'border-stone-300/80 bg-white/80 text-stone-700 hover:border-stone-400'
+              }`}
+            >
+              {isDark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+              <span className="text-[11px]">{isDark ? 'Dark' : 'Light'}</span>
+            </button>
+          </header>
+
+          {/* Full Screen Seamless List of Tabs (Icons merged with tabs, no outlines, visible names in light mode) */}
+          <div className="w-full divide-y divide-stone-200/20 dark:divide-stone-800/25">
+            {/* Page 1: Appearance */}
+            <div
+              onClick={() => setCurrentPage('appearance')}
+              className={`px-4 sm:px-5 py-3.5 flex items-center justify-between cursor-pointer transition-colors ${
+                isDark ? 'hover:bg-stone-900/40' : 'hover:bg-stone-200/30'
+              }`}
+            >
+              <div className="flex items-center gap-3.5 min-w-0">
+                <Palette className={`w-4 h-4 shrink-0 ${isDark ? 'text-amber-400' : 'text-stone-700'}`} />
+                <div className="min-w-0">
+                  <span className={`font-mono font-normal text-[13px] tracking-tight block truncate ${
+                    isDark ? 'text-stone-100' : 'text-stone-950'
+                  }`}>
+                    Appearance & Atmosphere
+                  </span>
+                  <span className={`text-[11px] font-normal block mt-0.5 truncate ${
+                    isDark ? 'text-stone-400' : 'text-stone-500'
+                  }`}>
+                    {isDark ? 'Obsidian OLED' : 'Alabaster Paper'} · Tactile textures
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center text-stone-400/60 dark:text-stone-600 shrink-0 pl-2">
+                <ChevronRight className="w-3.5 h-3.5" />
+              </div>
+            </div>
+
+            {/* Page 2: Reader Typography */}
+            <div
+              onClick={() => setCurrentPage('reader')}
+              className={`px-4 sm:px-5 py-3.5 flex items-center justify-between cursor-pointer transition-colors ${
+                isDark ? 'hover:bg-stone-900/40' : 'hover:bg-stone-200/30'
+              }`}
+            >
+              <div className="flex items-center gap-3.5 min-w-0">
+                <Type className={`w-4 h-4 shrink-0 ${isDark ? 'text-amber-400' : 'text-stone-700'}`} />
+                <div className="min-w-0">
+                  <span className={`font-mono font-normal text-[13px] tracking-tight block truncate ${
+                    isDark ? 'text-stone-100' : 'text-stone-950'
+                  }`}>
+                    Reader & Typography
+                  </span>
+                  <span className={`text-[11px] font-normal block mt-0.5 truncate ${
+                    isDark ? 'text-stone-400' : 'text-stone-500'
+                  }`}>
+                    Newsreader · {fontSize}pt · {pageTurnStyle === 'paginated' ? 'Paginated' : 'Scroll'}
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center text-stone-400/60 dark:text-stone-600 shrink-0 pl-2">
+                <ChevronRight className="w-3.5 h-3.5" />
+              </div>
+            </div>
+
+            {/* Page 3: Downloads & Offline Storage */}
+            <div
+              onClick={() => setCurrentPage('download')}
+              className={`px-4 sm:px-5 py-3.5 flex items-center justify-between cursor-pointer transition-colors ${
+                isDark ? 'hover:bg-stone-900/40' : 'hover:bg-stone-200/30'
+              }`}
+            >
+              <div className="flex items-center gap-3.5 min-w-0">
+                <Download className={`w-4 h-4 shrink-0 ${isDark ? 'text-amber-400' : 'text-stone-700'}`} />
+                <div className="min-w-0">
+                  <span className={`font-mono font-normal text-[13px] tracking-tight block truncate ${
+                    isDark ? 'text-stone-100' : 'text-stone-950'
+                  }`}>
+                    Downloads & Storage
+                  </span>
+                  <span className={`text-[11px] font-normal block mt-0.5 truncate ${
+                    isDark ? 'text-stone-400' : 'text-stone-500'
+                  }`}>
+                    {cacheCleared ? '0 MB cached' : '142 MB cached'} · Auto Wi-Fi sync
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center text-stone-400/60 dark:text-stone-600 shrink-0 pl-2">
+                <ChevronRight className="w-3.5 h-3.5" />
+              </div>
+            </div>
+
+            {/* Page 4: Audio & TTS Narration */}
+            <div
+              onClick={() => setCurrentPage('tts')}
+              className={`px-4 sm:px-5 py-3.5 flex items-center justify-between cursor-pointer transition-colors ${
+                isDark ? 'hover:bg-stone-900/40' : 'hover:bg-stone-200/30'
+              }`}
+            >
+              <div className="flex items-center gap-3.5 min-w-0">
+                <Headphones className={`w-4 h-4 shrink-0 ${isDark ? 'text-amber-400' : 'text-stone-700'}`} />
+                <div className="min-w-0">
+                  <span className={`font-mono font-normal text-[13px] tracking-tight block truncate ${
+                    isDark ? 'text-stone-100' : 'text-stone-950'
+                  }`}>
+                    Narration & Audio (TTS)
+                  </span>
+                  <span className={`text-[11px] font-normal block mt-0.5 truncate ${
+                    isDark ? 'text-stone-400' : 'text-stone-500'
+                  }`}>
+                    Voice: Clara Vance · {ttsSpeed}x · Soundscapes
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center text-stone-400/60 dark:text-stone-600 shrink-0 pl-2">
+                <ChevronRight className="w-3.5 h-3.5" />
+              </div>
+            </div>
+
+            {/* Page 5: Data & Marginalia */}
+            <div
+              onClick={() => setCurrentPage('data')}
+              className={`px-4 sm:px-5 py-3.5 flex items-center justify-between cursor-pointer transition-colors ${
+                isDark ? 'hover:bg-stone-900/40' : 'hover:bg-stone-200/30'
+              }`}
+            >
+              <div className="flex items-center gap-3.5 min-w-0">
+                <FileText className={`w-4 h-4 shrink-0 ${isDark ? 'text-amber-400' : 'text-stone-700'}`} />
+                <div className="min-w-0">
+                  <span className={`font-mono font-normal text-[13px] tracking-tight block truncate ${
+                    isDark ? 'text-stone-100' : 'text-stone-950'
+                  }`}>
+                    Data & Marginalia
+                  </span>
+                  <span className={`text-[11px] font-normal block mt-0.5 truncate ${
+                    isDark ? 'text-stone-400' : 'text-stone-500'
+                  }`}>
+                    Export notes (.md) · {readingGoal} books annual target
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center text-stone-400/60 dark:text-stone-600 shrink-0 pl-2">
+                <ChevronRight className="w-3.5 h-3.5" />
+              </div>
+            </div>
+
+            {/* Page 6: About Folio Engine */}
+            <div
+              onClick={() => setCurrentPage('about')}
+              className={`px-4 sm:px-5 py-3.5 flex items-center justify-between cursor-pointer transition-colors ${
+                isDark ? 'hover:bg-stone-900/40' : 'hover:bg-stone-200/30'
+              }`}
+            >
+              <div className="flex items-center gap-3.5 min-w-0">
+                <Info className={`w-4 h-4 shrink-0 ${isDark ? 'text-amber-400' : 'text-stone-700'}`} />
+                <div className="min-w-0">
+                  <span className={`font-mono font-normal text-[13px] tracking-tight block truncate ${
+                    isDark ? 'text-stone-100' : 'text-stone-950'
+                  }`}>
+                    About Folio Engine
+                  </span>
+                  <span className={`text-[11px] font-normal block mt-0.5 truncate ${
+                    isDark ? 'text-stone-400' : 'text-stone-500'
+                  }`}>
+                    Version 2.5 · Minimalist Editorial System
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center text-stone-400/60 dark:text-stone-600 shrink-0 pl-2">
+                <ChevronRight className="w-3.5 h-3.5" />
+              </div>
+            </div>
+          </div>
+
+          <footer className="py-6 text-center text-[10px] font-mono text-stone-400 dark:text-stone-600">
+            Folio Minimalist Monograph System · Build 2026.10
+          </footer>
+        </>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 2. DEDICATED PAGE: APPEARANCE & ATMOSPHERE                               */}
+      {/* ========================================================================= */}
+      {currentPage === 'appearance' && (
+        <>
+          {renderSubPageHeader('Appearance')}
+
+          {/* Full Screen Layout Merging into Screen with delicate hairline dividers */}
+          <div className="w-full divide-y divide-stone-200/20 dark:divide-stone-800/25">
             {/* Visual Scheme Selector */}
-            <div className="p-3.5">
-              <span className="text-xs font-medium block mb-2">Display Theme</span>
-              <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="px-4 sm:px-5 py-4">
+              <span className={`text-[10px] font-mono uppercase tracking-widest block mb-2.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                Display Theme
+              </span>
+              <div className="grid grid-cols-2 gap-2.5 text-xs">
                 <button
                   type="button"
                   onClick={() => {
                     if (isDark) onToggleDarkMode();
                   }}
-                  className={`p-3 rounded-xl border text-left transition-all flex flex-col justify-between h-20 ${
+                  className={`p-3 rounded-lg border text-left transition-all flex flex-col justify-between h-22 cursor-pointer ${
                     !isDark
-                      ? 'border-stone-900 bg-[#FAF8F5] text-stone-900 ring-2 ring-stone-900 shadow-xs'
-                      : 'border-stone-800 bg-stone-900/60 text-stone-400 hover:border-stone-700'
+                      ? 'border-stone-900 bg-stone-200/30 text-stone-900 shadow-2xs'
+                      : 'border-stone-800/80 bg-stone-900/40 text-stone-400 hover:border-stone-700'
                   }`}
                 >
                   <div className="flex items-center justify-between w-full">
-                    <span className="font-serif font-medium">Alabaster Paper</span>
+                    <span className={`font-mono text-xs font-normal ${isDark ? 'text-stone-200' : 'text-stone-950'}`}>Alabaster</span>
                     {!isDark && <Check className="w-3.5 h-3.5 text-stone-900" />}
                   </div>
-                  <span className="text-[10px] opacity-70">Daylight warm tactile linen</span>
+                  <span className="text-[10.5px] opacity-70 leading-snug">Daylight tactile linen for daytime reading</span>
                 </button>
 
                 <button
@@ -315,86 +446,74 @@ export const ScreenSettings: React.FC<ScreenSettingsProps> = ({
                   onClick={() => {
                     if (!isDark) onToggleDarkMode();
                   }}
-                  className={`p-3 rounded-xl border text-left transition-all flex flex-col justify-between h-20 ${
+                  className={`p-3 rounded-lg border text-left transition-all flex flex-col justify-between h-22 cursor-pointer ${
                     isDark
-                      ? 'border-amber-400 bg-[#121214] text-stone-100 ring-2 ring-amber-400/80 shadow-xs'
-                      : 'border-stone-200 bg-stone-100 text-stone-600 hover:border-stone-300'
+                      ? 'border-amber-400/80 bg-stone-900/80 text-stone-100 shadow-2xs'
+                      : 'border-stone-200 bg-stone-100/50 text-stone-600 hover:border-stone-300'
                   }`}
                 >
                   <div className="flex items-center justify-between w-full">
-                    <span className="font-serif font-medium">Obsidian OLED</span>
+                    <span className={`font-mono text-xs font-normal ${isDark ? 'text-stone-100' : 'text-stone-950'}`}>Obsidian</span>
                     {isDark && <Check className="w-3.5 h-3.5 text-amber-400" />}
                   </div>
-                  <span className="text-[10px] opacity-70">Low glare e-ink nocturnal paper</span>
+                  <span className="text-[10.5px] opacity-70 leading-snug">Zero-glare pitch-black night e-ink paper</span>
                 </button>
               </div>
             </div>
 
             {/* High Contrast Paper Mode */}
-            <div className="p-3.5 flex items-center justify-between">
-              <div>
-                <span className="text-xs font-medium block">High Contrast Monochrome</span>
-                <span className={`text-[11px] block mt-0.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
-                  Maximizes black and white contrast under direct sunlight
+            <div className="px-4 sm:px-5 py-4 flex items-center justify-between gap-4">
+              <div className="min-w-0 pr-2">
+                <span className={`font-mono font-normal text-xs block ${isDark ? 'text-stone-100' : 'text-stone-950'}`}>
+                  High Contrast Monochrome
+                </span>
+                <span className={`text-[11px] font-normal block mt-0.5 leading-relaxed ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                  Maximizes pure black and white contrast for outdoor daylight reading
                 </span>
               </div>
-              <button
-                type="button"
-                onClick={() => setHighContrast(!highContrast)}
-                className={`w-11 h-6 rounded-full transition-colors relative p-0.5 ${
-                  highContrast ? (isDark ? 'bg-amber-400' : 'bg-stone-900') : (isDark ? 'bg-stone-800' : 'bg-stone-300')
-                }`}
-              >
-                <div
-                  className={`w-5 h-5 rounded-full bg-white transition-transform ${
-                    highContrast ? 'translate-x-5' : 'translate-x-0'
-                  }`}
-                />
-              </button>
+              <ToggleSwitch
+                checked={highContrast}
+                onChange={() => setHighContrast(!highContrast)}
+                ariaLabel="Toggle high contrast monochrome"
+                isDark={isDark}
+              />
             </div>
 
             {/* Tactile Paper Texture Sheen */}
-            <div className="p-3.5 flex items-center justify-between">
-              <div>
-                <span className="text-xs font-medium block">Tactile Paper Sheen</span>
-                <span className={`text-[11px] block mt-0.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
-                  Subtle book-cloth texture gradient across reading chambers
+            <div className="px-4 sm:px-5 py-4 flex items-center justify-between gap-4">
+              <div className="min-w-0 pr-2">
+                <span className={`font-mono font-normal text-xs block ${isDark ? 'text-stone-100' : 'text-stone-950'}`}>
+                  Tactile Paper Texture Sheen
+                </span>
+                <span className={`text-[11px] font-normal block mt-0.5 leading-relaxed ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                  Simulates natural fibers and subtle bookbinding grain
                 </span>
               </div>
-              <button
-                type="button"
-                onClick={() => setPaperTexture(!paperTexture)}
-                className={`w-11 h-6 rounded-full transition-colors relative p-0.5 ${
-                  paperTexture ? (isDark ? 'bg-amber-400' : 'bg-stone-900') : (isDark ? 'bg-stone-800' : 'bg-stone-300')
-                }`}
-              >
-                <div
-                  className={`w-5 h-5 rounded-full bg-white transition-transform ${
-                    paperTexture ? 'translate-x-5' : 'translate-x-0'
-                  }`}
-                />
-              </button>
+              <ToggleSwitch
+                checked={paperTexture}
+                onChange={() => setPaperTexture(!paperTexture)}
+                ariaLabel="Toggle tactile paper texture"
+                isDark={isDark}
+              />
             </div>
           </div>
-        </section>
+        </>
+      )}
 
-        {/* ============================================================ */}
-        {/* HUB SECTION 2: READER CHAMBER */}
-        {/* ============================================================ */}
-        <section id="sec-reader" className="pt-2">
-          <div className="flex items-center gap-2 mb-2.5">
-            <BookOpen className={`w-4 h-4 ${isDark ? 'text-amber-400' : 'text-amber-800'}`} />
-            <h2 className="text-sm font-serif font-semibold">Reader Typography & Flow</h2>
-          </div>
+      {/* ========================================================================= */}
+      {/* 3. DEDICATED PAGE: READER & TYPOGRAPHY                                   */}
+      {/* ========================================================================= */}
+      {currentPage === 'reader' && (
+        <>
+          {renderSubPageHeader('Reader Typography')}
 
-          <div
-            className={`rounded-2xl border divide-y overflow-hidden shadow-2xs ${
-              isDark ? 'bg-[#18181C] border-stone-800 divide-stone-800/80' : 'bg-white border-stone-200/90 divide-stone-100'
-            }`}
-          >
+          {/* Full Screen Layout Merging into Screen with delicate hairline dividers */}
+          <div className="w-full divide-y divide-stone-200/20 dark:divide-stone-800/25">
             {/* Font Family Selection */}
-            <div className="p-3.5">
-              <span className="text-xs font-medium block mb-2">Default Reading Font</span>
+            <div className="px-4 sm:px-5 py-4">
+              <span className={`text-[10px] font-mono uppercase tracking-widest block mb-2.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                Default Typography Font
+              </span>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 {[
                   { id: 'serif', label: 'Newsreader Serif', font: 'font-serif' },
@@ -406,28 +525,30 @@ export const ScreenSettings: React.FC<ScreenSettingsProps> = ({
                     key={f.id}
                     type="button"
                     onClick={() => setDefaultFont(f.id as any)}
-                    className={`min-h-[40px] px-3 rounded-lg border text-left transition-colors flex items-center justify-between ${f.font} ${
+                    className={`min-h-[40px] px-3 rounded-lg border text-left transition-colors flex items-center justify-between cursor-pointer ${f.font} ${
                       defaultFont === f.id
                         ? isDark
-                          ? 'border-amber-400/80 bg-stone-800 text-amber-300 font-semibold'
-                          : 'border-stone-900 bg-stone-100 text-stone-900 font-semibold'
+                          ? 'border-amber-400/80 bg-stone-900 text-amber-300'
+                          : 'border-stone-900 bg-stone-200/40 text-stone-900'
                         : isDark
-                        ? 'border-stone-800 hover:border-stone-700 text-stone-300'
-                        : 'border-stone-200 hover:border-stone-300 text-stone-700'
+                        ? 'border-stone-800/80 hover:border-stone-700 text-stone-400'
+                        : 'border-stone-200 hover:border-stone-300 text-stone-600'
                     }`}
                   >
-                    <span>{f.label}</span>
-                    {defaultFont === f.id && <Check className="w-3.5 h-3.5" />}
+                    <span className="text-xs">{f.label}</span>
+                    {defaultFont === f.id && <Check className="w-3.5 h-3.5 shrink-0" />}
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Base Font Size Slider */}
-            <div className="p-3.5">
+            <div className="px-4 sm:px-5 py-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-medium">Base Reading Size</span>
-                <span className="text-xs font-mono tabular-nums">{fontSize} pt</span>
+                <span className={`text-[10px] font-mono uppercase tracking-widest ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                  Base Reading Size
+                </span>
+                <span className="text-xs font-mono tabular-nums text-amber-500 dark:text-amber-400">{fontSize} pt</span>
               </div>
               <input
                 type="range"
@@ -436,37 +557,39 @@ export const ScreenSettings: React.FC<ScreenSettingsProps> = ({
                 step="1"
                 value={fontSize}
                 onChange={(e) => setFontSize(Number(e.target.value))}
-                className="w-full accent-amber-500 cursor-pointer"
+                className="w-full accent-amber-500 cursor-pointer h-1.5"
               />
               <p
                 style={{ fontSize: `${fontSize}px` }}
-                className={`font-serif italic mt-2.5 p-2 rounded-lg border leading-snug transition-all ${
-                  isDark ? 'bg-stone-900/60 border-stone-800 text-stone-200' : 'bg-stone-50 border-stone-200 text-stone-800'
+                className={`font-serif italic mt-3 p-3 rounded-lg border leading-relaxed transition-all ${
+                  isDark ? 'bg-stone-900/40 border-stone-800/80 text-stone-300' : 'bg-stone-50 border-stone-200/70 text-stone-800'
                 }`}
               >
-                “The shoreline does not end; it merely yields to the swell.”
+                “The shoreline does not end; it merely yields to the swell, surrendering its edges until the tide decides what may remain.”
               </p>
             </div>
 
             {/* Line Spacing */}
-            <div className="p-3.5 flex items-center justify-between">
-              <div>
-                <span className="text-xs font-medium block">Line Spacing Leading</span>
-                <span className={`text-[11px] block mt-0.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
-                  Optically balanced reading rhythm
+            <div className="px-4 sm:px-5 py-4 flex items-center justify-between gap-4">
+              <div className="min-w-0 pr-2">
+                <span className={`font-mono font-normal text-xs block ${isDark ? 'text-stone-100' : 'text-stone-950'}`}>
+                  Line Spacing Leading
+                </span>
+                <span className={`text-[11px] font-normal block mt-0.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                  Optically balanced vertical rhythm
                 </span>
               </div>
-              <div className={`p-0.5 rounded-lg border flex gap-1 ${isDark ? 'bg-stone-900 border-stone-800' : 'bg-stone-100 border-stone-200'}`}>
+              <div className={`p-0.5 rounded-lg border flex gap-1 shrink-0 ${isDark ? 'bg-stone-900/60 border-stone-800' : 'bg-stone-100 border-stone-200'}`}>
                 {(['normal', 'relaxed', 'loose'] as const).map((s) => (
                   <button
                     key={s}
                     type="button"
                     onClick={() => setLineSpacing(s)}
-                    className={`min-h-[30px] px-2.5 rounded-md text-[11px] font-medium capitalize transition-colors ${
+                    className={`min-h-[28px] px-2.5 rounded-md text-[11px] font-mono capitalize transition-colors cursor-pointer ${
                       lineSpacing === s
                         ? isDark
-                          ? 'bg-stone-800 text-amber-400 shadow-xs'
-                          : 'bg-white text-stone-900 shadow-xs'
+                          ? 'bg-stone-800 text-amber-400 shadow-2xs'
+                          : 'bg-white text-stone-900 shadow-2xs'
                         : isDark
                         ? 'text-stone-400'
                         : 'text-stone-500'
@@ -479,37 +602,39 @@ export const ScreenSettings: React.FC<ScreenSettingsProps> = ({
             </div>
 
             {/* Page Turning Style */}
-            <div className="p-3.5 flex items-center justify-between">
-              <div>
-                <span className="text-xs font-medium block">Reading Flow</span>
-                <span className={`text-[11px] block mt-0.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+            <div className="px-4 sm:px-5 py-4 flex items-center justify-between gap-4">
+              <div className="min-w-0 pr-2">
+                <span className={`font-mono font-normal text-xs block ${isDark ? 'text-stone-100' : 'text-stone-950'}`}>
+                  Reading Flow Mode
+                </span>
+                <span className={`text-[11px] font-normal block mt-0.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
                   {pageTurnStyle === 'paginated' ? 'E-Ink Paginated Turn' : 'Continuous Scroll'}
                 </span>
               </div>
-              <div className={`p-0.5 rounded-lg border flex gap-1 ${isDark ? 'bg-stone-900 border-stone-800' : 'bg-stone-100 border-stone-200'}`}>
+              <div className={`p-0.5 rounded-lg border flex gap-1 shrink-0 ${isDark ? 'bg-stone-900/60 border-stone-800' : 'bg-stone-100 border-stone-200'}`}>
                 <button
                   type="button"
                   onClick={() => setPageTurnStyle('paginated')}
-                  className={`min-h-[30px] px-2.5 rounded-md text-[11px] font-medium transition-colors ${
+                  className={`min-h-[28px] px-2.5 rounded-md text-[11px] font-mono transition-colors cursor-pointer ${
                     pageTurnStyle === 'paginated'
                       ? isDark
-                        ? 'bg-stone-800 text-amber-400 shadow-xs'
-                        : 'bg-white text-stone-900 shadow-xs'
+                        ? 'bg-stone-800 text-amber-400 shadow-2xs'
+                        : 'bg-white text-stone-900 shadow-2xs'
                       : isDark
                       ? 'text-stone-400'
                       : 'text-stone-500'
                   }`}
                 >
-                  Pages
+                  Paginated
                 </button>
                 <button
                   type="button"
                   onClick={() => setPageTurnStyle('scroll')}
-                  className={`min-h-[30px] px-2.5 rounded-md text-[11px] font-medium transition-colors ${
+                  className={`min-h-[28px] px-2.5 rounded-md text-[11px] font-mono transition-colors cursor-pointer ${
                     pageTurnStyle === 'scroll'
                       ? isDark
-                        ? 'bg-stone-800 text-amber-400 shadow-xs'
-                        : 'bg-white text-stone-900 shadow-xs'
+                        ? 'bg-stone-800 text-amber-400 shadow-2xs'
+                        : 'bg-white text-stone-900 shadow-2xs'
                       : isDark
                       ? 'text-stone-400'
                       : 'text-stone-500'
@@ -521,105 +646,95 @@ export const ScreenSettings: React.FC<ScreenSettingsProps> = ({
             </div>
 
             {/* Keep Awake Toggle */}
-            <div className="p-3.5 flex items-center justify-between">
-              <div>
-                <span className="text-xs font-medium block">Keep Screen Awake</span>
-                <span className={`text-[11px] block mt-0.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
-                  Prevents auto-sleep while immersed in chapters
+            <div className="px-4 sm:px-5 py-4 flex items-center justify-between gap-4">
+              <div className="min-w-0 pr-2">
+                <span className={`font-mono font-normal text-xs block ${isDark ? 'text-stone-100' : 'text-stone-950'}`}>
+                  Keep Screen Awake
+                </span>
+                <span className={`text-[11px] font-normal block mt-0.5 leading-relaxed ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                  Prevents screen auto-dimming during extended reading
                 </span>
               </div>
-              <button
-                type="button"
-                onClick={() => setKeepAwake(!keepAwake)}
-                className={`w-11 h-6 rounded-full transition-colors relative p-0.5 ${
-                  keepAwake ? (isDark ? 'bg-amber-400' : 'bg-stone-900') : (isDark ? 'bg-stone-800' : 'bg-stone-300')
-                }`}
-              >
-                <div
-                  className={`w-5 h-5 rounded-full bg-white transition-transform ${
-                    keepAwake ? 'translate-x-5' : 'translate-x-0'
-                  }`}
-                />
-              </button>
+              <ToggleSwitch
+                checked={keepAwake}
+                onChange={() => setKeepAwake(!keepAwake)}
+                ariaLabel="Toggle keep screen awake"
+                isDark={isDark}
+              />
             </div>
           </div>
-        </section>
+        </>
+      )}
 
-        {/* ============================================================ */}
-        {/* HUB SECTION 3: DOWNLOAD & STORAGE */}
-        {/* ============================================================ */}
-        <section id="sec-download" className="pt-2">
-          <div className="flex items-center gap-2 mb-2.5">
-            <Download className={`w-4 h-4 ${isDark ? 'text-amber-400' : 'text-amber-800'}`} />
-            <h2 className="text-sm font-serif font-semibold">Download & Offline Storage</h2>
-          </div>
+      {/* ========================================================================= */}
+      {/* 4. DEDICATED PAGE: DOWNLOADS & OFFLINE STORAGE                           */}
+      {/* ========================================================================= */}
+      {currentPage === 'download' && (
+        <>
+          {renderSubPageHeader('Downloads & Storage')}
 
-          <div
-            className={`rounded-2xl border divide-y overflow-hidden shadow-2xs ${
-              isDark ? 'bg-[#18181C] border-stone-800 divide-stone-800/80' : 'bg-white border-stone-200/90 divide-stone-100'
-            }`}
-          >
+          {/* Full Screen Layout Merging into Screen with delicate hairline dividers */}
+          <div className="w-full divide-y divide-stone-200/20 dark:divide-stone-800/25">
             {/* Storage Footprint Bar */}
-            <div className="p-3.5">
+            <div className="px-4 sm:px-5 py-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-medium">Offline Novel Footprint</span>
-                <span className="text-xs font-mono font-semibold">
-                  {cacheCleared ? '0 MB' : '142 MB (9 Volumes)'}
+                <span className={`text-[10px] font-mono uppercase tracking-widest ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                  Local Device Storage
+                </span>
+                <span className="text-xs font-mono text-amber-500 dark:text-amber-400">
+                  {cacheCleared ? '0 MB' : '142 MB Cached'}
                 </span>
               </div>
 
-              <div className={`w-full h-2 rounded-full overflow-hidden flex ${isDark ? 'bg-stone-800' : 'bg-stone-100'}`}>
+              <div className={`w-full h-1.5 rounded-full overflow-hidden flex ${isDark ? 'bg-stone-800' : 'bg-stone-200'}`}>
                 <div className={`h-full ${isDark ? 'bg-amber-400' : 'bg-stone-900'}`} style={{ width: cacheCleared ? '0%' : '75%' }} />
                 <div className="h-full bg-amber-600" style={{ width: cacheCleared ? '0%' : '15%' }} />
               </div>
 
-              <div className="flex items-center justify-between text-[10px] font-mono text-stone-400 mt-2">
-                <span>Texts: 118 MB</span>
-                <span>Audio Waveforms: 24 MB</span>
-                <span>Free Device Space: 38 GB</span>
+              <div className="flex items-center justify-between text-[11px] font-mono text-stone-400 mt-2">
+                <span>Texts: {cacheCleared ? '0 MB' : '118 MB'}</span>
+                <span>Audio: {cacheCleared ? '0 MB' : '24 MB'}</span>
+                <span>Free: 38.2 GB</span>
               </div>
             </div>
 
             {/* Auto-download over Wi-Fi */}
-            <div className="p-3.5 flex items-center justify-between">
-              <div>
-                <span className="text-xs font-medium block">Auto-Download Over Wi-Fi</span>
-                <span className={`text-[11px] block mt-0.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
-                  Automatically precaches unread chapters when connected
+            <div className="px-4 sm:px-5 py-4 flex items-center justify-between gap-4">
+              <div className="min-w-0 pr-2">
+                <span className={`font-mono font-normal text-xs block ${isDark ? 'text-stone-100' : 'text-stone-950'}`}>
+                  Auto-Download Over Wi-Fi
+                </span>
+                <span className={`text-[11px] font-normal block mt-0.5 leading-relaxed ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                  Automatically caches unread chapters when Wi-Fi is active
                 </span>
               </div>
-              <button
-                type="button"
-                onClick={() => setAutoDownloadWifi(!autoDownloadWifi)}
-                className={`w-11 h-6 rounded-full transition-colors relative p-0.5 ${
-                  autoDownloadWifi ? (isDark ? 'bg-amber-400' : 'bg-stone-900') : (isDark ? 'bg-stone-800' : 'bg-stone-300')
-                }`}
-              >
-                <div
-                  className={`w-5 h-5 rounded-full bg-white transition-transform ${
-                    autoDownloadWifi ? 'translate-x-5' : 'translate-x-0'
-                  }`}
-                />
-              </button>
+              <ToggleSwitch
+                checked={autoDownloadWifi}
+                onChange={() => setAutoDownloadWifi(!autoDownloadWifi)}
+                ariaLabel="Toggle auto-download over Wi-Fi"
+                isDark={isDark}
+              />
             </div>
 
             {/* Purge Cache Button */}
-            <div className="p-3.5 flex items-center justify-between">
-              <div>
-                <span className="text-xs font-medium block">Purge Offline Media Cache</span>
-                <span className={`text-[11px] block mt-0.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
-                  {cacheCleared ? 'Cache purged cleanly.' : 'Frees 142 MB of local device storage'}
+            <div className="px-4 sm:px-5 py-4 flex items-center justify-between gap-4">
+              <div className="min-w-0 pr-2">
+                <span className={`font-mono font-normal text-xs block ${isDark ? 'text-stone-100' : 'text-stone-950'}`}>
+                  Purge Offline Media Cache
+                </span>
+                <span className={`text-[11px] font-normal block mt-0.5 leading-relaxed ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                  {cacheCleared ? 'Cache purged cleanly.' : 'Frees up local storage without removing reading progress'}
                 </span>
               </div>
               <button
                 type="button"
                 onClick={handleClearCache}
-                className={`min-h-[36px] px-3 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors border ${
+                className={`min-h-[32px] px-3 rounded-lg text-xs font-mono font-normal flex items-center gap-1.5 transition-colors border cursor-pointer shrink-0 ${
                   cacheCleared
                     ? 'bg-emerald-600 text-white border-emerald-600'
                     : isDark
-                    ? 'border-stone-700 text-stone-400 hover:text-red-400 hover:border-red-900/50'
-                    : 'border-stone-300 text-stone-600 hover:text-red-600 hover:border-red-300'
+                    ? 'border-stone-800 bg-stone-900 text-stone-300 hover:text-red-400 hover:border-red-900/50'
+                    : 'border-stone-300 bg-white text-stone-700 hover:text-red-600 hover:border-red-300'
                 }`}
               >
                 {cacheCleared ? <Check className="w-3.5 h-3.5" /> : <Trash2 className="w-3.5 h-3.5" />}
@@ -627,92 +742,92 @@ export const ScreenSettings: React.FC<ScreenSettingsProps> = ({
               </button>
             </div>
           </div>
-        </section>
+        </>
+      )}
 
-        {/* ============================================================ */}
-        {/* HUB SECTION 4: TTS (TEXT-TO-SPEECH) & AUDIO */}
-        {/* ============================================================ */}
-        <section id="sec-tts" className="pt-2">
-          <div className="flex items-center gap-2 mb-2.5">
-            <Headphones className={`w-4 h-4 ${isDark ? 'text-amber-400' : 'text-amber-800'}`} />
-            <h2 className="text-sm font-serif font-semibold">TTS (Text-to-Speech) & Narration</h2>
-          </div>
+      {/* ========================================================================= */}
+      {/* 5. DEDICATED PAGE: TTS & NARRATION                                      */}
+      {/* ========================================================================= */}
+      {currentPage === 'tts' && (
+        <>
+          {renderSubPageHeader('TTS & Narration')}
 
-          <div
-            className={`rounded-2xl border divide-y overflow-hidden shadow-2xs ${
-              isDark ? 'bg-[#18181C] border-stone-800 divide-stone-800/80' : 'bg-white border-stone-200/90 divide-stone-100'
-            }`}
-          >
-            {/* TTS Voice Selection */}
-            <div className="p-3.5">
+          {/* Full Screen Layout Merging into Screen with delicate hairline dividers */}
+          <div className="w-full divide-y divide-stone-200/20 dark:divide-stone-800/25">
+            {/* Voice Selection */}
+            <div className="px-4 sm:px-5 py-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-medium">Narration Voice Model</span>
+                <span className={`text-[10px] font-mono uppercase tracking-widest ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                  Narration Voice Model
+                </span>
                 <button
                   type="button"
                   onClick={handleToggleTTSPreview}
-                  className={`min-h-[30px] px-2.5 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all ${
+                  className={`min-h-[28px] px-2.5 rounded-lg text-xs font-mono font-normal flex items-center gap-1.5 transition-all cursor-pointer ${
                     isPlayingTTSPreview
-                      ? 'bg-amber-500 text-stone-950 font-semibold'
+                      ? 'bg-amber-500 text-stone-950'
                       : isDark
-                      ? 'bg-stone-800 text-amber-400 hover:bg-stone-700'
-                      : 'bg-stone-100 text-stone-800 hover:bg-stone-200'
+                      ? 'bg-stone-900 border border-stone-800 text-amber-400 hover:bg-stone-800'
+                      : 'bg-stone-100 border border-stone-200 text-stone-800 hover:bg-stone-200'
                   }`}
                 >
                   {isPlayingTTSPreview ? <Square className="w-3 h-3 fill-current" /> : <Play className="w-3 h-3 fill-current" />}
-                  <span>{isPlayingTTSPreview ? 'Stop Sample' : 'Test TTS Voice'}</span>
+                  <span>{isPlayingTTSPreview ? 'Stop' : 'Sample'}</span>
                 </button>
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-xs">
                 {[
-                  { id: 'clara', name: 'Clara Vance', desc: 'Studio English · Calm & Serene' },
+                  { id: 'clara', name: 'Clara Vance', desc: 'Studio English · Serene' },
                   { id: 'erik', name: 'Erik Lindqvist', desc: 'Nordic Deep · Measured' },
-                  { id: 'kenji', name: 'Kenji Mori', desc: 'Tokyo Neo-Noir · Soft' },
-                  { id: 'system', name: 'System Speech', desc: 'Native OS Neural Synthesizer' },
+                  { id: 'kenji', name: 'Kenji Mori', desc: 'Neo-Noir · Soft Pace' },
+                  { id: 'system', name: 'System Speech', desc: 'Native Neural Voice' },
                 ].map((v) => (
                   <button
                     key={v.id}
                     type="button"
                     onClick={() => setTtsVoice(v.id as any)}
-                    className={`p-2.5 rounded-xl border text-left transition-colors flex flex-col justify-between ${
+                    className={`p-2.5 rounded-lg border text-left transition-colors flex flex-col justify-between cursor-pointer ${
                       ttsVoice === v.id
                         ? isDark
-                          ? 'border-amber-400/80 bg-stone-800 text-amber-300 font-semibold shadow-2xs'
-                          : 'border-stone-900 bg-stone-100 text-stone-900 font-semibold shadow-2xs'
+                          ? 'border-amber-400/80 bg-stone-900 text-amber-300'
+                          : 'border-stone-900 bg-stone-200/40 text-stone-900'
                         : isDark
-                        ? 'border-stone-800 hover:border-stone-700 text-stone-300'
-                        : 'border-stone-200 hover:border-stone-300 text-stone-700'
+                        ? 'border-stone-800/80 hover:border-stone-700 text-stone-400'
+                        : 'border-stone-200 hover:border-stone-300 text-stone-600'
                     }`}
                   >
                     <div className="flex items-center justify-between w-full">
-                      <span className="font-medium text-xs">{v.name}</span>
+                      <span className={`font-mono text-xs font-normal ${isDark ? 'text-stone-100' : 'text-stone-950'}`}>{v.name}</span>
                       {ttsVoice === v.id && <Check className="w-3.5 h-3.5" />}
                     </div>
-                    <span className="text-[10px] opacity-70 mt-1">{v.desc}</span>
+                    <span className="text-[10px] opacity-70 mt-0.5">{v.desc}</span>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Reading Speed */}
-            <div className="p-3.5 flex items-center justify-between">
-              <div>
-                <span className="text-xs font-medium block">Narration Speed</span>
-                <span className={`text-[11px] block mt-0.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
-                  Natural cadence tuning
+            {/* Narration Speed */}
+            <div className="px-4 sm:px-5 py-4 flex items-center justify-between gap-4">
+              <div className="min-w-0 pr-2">
+                <span className={`font-mono font-normal text-xs block ${isDark ? 'text-stone-100' : 'text-stone-950'}`}>
+                  Narration Speed
+                </span>
+                <span className={`text-[11px] font-normal block mt-0.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                  Speech pace multiplier
                 </span>
               </div>
-              <div className={`p-0.5 rounded-lg border flex gap-1 ${isDark ? 'bg-stone-900 border-stone-800' : 'bg-stone-100 border-stone-200'}`}>
+              <div className={`p-0.5 rounded-lg border flex gap-1 shrink-0 ${isDark ? 'bg-stone-900/60 border-stone-800' : 'bg-stone-100 border-stone-200'}`}>
                 {[0.8, 1.0, 1.25, 1.5].map((spd) => (
                   <button
                     key={spd}
                     type="button"
                     onClick={() => setTtsSpeed(spd)}
-                    className={`min-h-[30px] px-2 rounded-md text-[11px] font-mono transition-colors ${
+                    className={`min-h-[28px] px-2 rounded-md text-[11px] font-mono transition-colors cursor-pointer ${
                       ttsSpeed === spd
                         ? isDark
-                          ? 'bg-stone-800 text-amber-400 font-semibold shadow-xs'
-                          : 'bg-white text-stone-900 font-semibold shadow-xs'
+                          ? 'bg-stone-800 text-amber-400 shadow-2xs'
+                          : 'bg-white text-stone-900 shadow-2xs'
                         : isDark
                         ? 'text-stone-400'
                         : 'text-stone-500'
@@ -724,25 +839,27 @@ export const ScreenSettings: React.FC<ScreenSettingsProps> = ({
               </div>
             </div>
 
-            {/* Voice Pitch */}
-            <div className="p-3.5 flex items-center justify-between">
-              <div>
-                <span className="text-xs font-medium block">Vocal Tone & Timbre</span>
-                <span className={`text-[11px] block mt-0.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
-                  Acoustic depth of speech synthesis
+            {/* Vocal Pitch */}
+            <div className="px-4 sm:px-5 py-4 flex items-center justify-between gap-4">
+              <div className="min-w-0 pr-2">
+                <span className={`font-mono font-normal text-xs block ${isDark ? 'text-stone-100' : 'text-stone-950'}`}>
+                  Vocal Tone & Timbre
+                </span>
+                <span className={`text-[11px] font-normal block mt-0.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                  Acoustic resonance
                 </span>
               </div>
-              <div className={`p-0.5 rounded-lg border flex gap-1 ${isDark ? 'bg-stone-900 border-stone-800' : 'bg-stone-100 border-stone-200'}`}>
+              <div className={`p-0.5 rounded-lg border flex gap-1 shrink-0 ${isDark ? 'bg-stone-900/60 border-stone-800' : 'bg-stone-100 border-stone-200'}`}>
                 {(['warm', 'balanced', 'crisp'] as const).map((p) => (
                   <button
                     key={p}
                     type="button"
                     onClick={() => setTtsPitch(p)}
-                    className={`min-h-[30px] px-2.5 rounded-md text-[11px] capitalize transition-colors ${
+                    className={`min-h-[28px] px-2.5 rounded-md text-[11px] font-mono capitalize transition-colors cursor-pointer ${
                       ttsPitch === p
                         ? isDark
-                          ? 'bg-stone-800 text-amber-400 font-semibold shadow-xs'
-                          : 'bg-white text-stone-900 font-semibold shadow-xs'
+                          ? 'bg-stone-800 text-amber-400 shadow-2xs'
+                          : 'bg-white text-stone-900 shadow-2xs'
                         : isDark
                         ? 'text-stone-400'
                         : 'text-stone-500'
@@ -754,10 +871,12 @@ export const ScreenSettings: React.FC<ScreenSettingsProps> = ({
               </div>
             </div>
 
-            {/* Ambient Sound Pairing */}
-            <div className="p-3.5">
-              <span className="text-xs font-medium block mb-2">Ambient Background Soundscape</span>
-              <div className="grid grid-cols-4 gap-1.5 text-xs text-center">
+            {/* Ambient Soundscapes */}
+            <div className="px-4 sm:px-5 py-4">
+              <span className={`text-[10px] font-mono uppercase tracking-widest block mb-2 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                Ambient Background Soundscape
+              </span>
+              <div className="grid grid-cols-4 gap-2 text-xs text-center">
                 {[
                   { id: 'rain', label: 'Rain', icon: CloudRain },
                   { id: 'ocean', label: 'Tides', icon: Waves },
@@ -770,80 +889,73 @@ export const ScreenSettings: React.FC<ScreenSettingsProps> = ({
                       key={s.id}
                       type="button"
                       onClick={() => setAmbientSound(s.id as any)}
-                      className={`min-h-[44px] p-2 rounded-xl border flex flex-col items-center justify-center gap-1 transition-all ${
+                      className={`min-h-[46px] p-1.5 rounded-lg border flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
                         ambientSound === s.id
                           ? isDark
-                            ? 'border-amber-400 bg-stone-800 text-amber-300 font-semibold shadow-xs'
-                            : 'border-stone-900 bg-stone-100 text-stone-900 font-semibold shadow-xs'
+                            ? 'border-amber-400/80 bg-stone-900 text-amber-300'
+                            : 'border-stone-900 bg-stone-200/40 text-stone-900'
                           : isDark
-                          ? 'border-stone-800 text-stone-400 hover:text-stone-200'
+                          ? 'border-stone-800/80 text-stone-400 hover:text-stone-200'
                           : 'border-stone-200 text-stone-600 hover:text-stone-900'
                       }`}
                     >
                       <Icon className="w-3.5 h-3.5" />
-                      <span className="text-[10px]">{s.label}</span>
+                      <span className="text-[10px] font-mono">{s.label}</span>
                     </button>
                   );
                 })}
               </div>
             </div>
 
-            {/* Auto Advance Chapter */}
-            <div className="p-3.5 flex items-center justify-between">
-              <div>
-                <span className="text-xs font-medium block">Continuous Narration</span>
-                <span className={`text-[11px] block mt-0.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
-                  Automatically start next chapter when reading completes
+            {/* Continuous Narration */}
+            <div className="px-4 sm:px-5 py-4 flex items-center justify-between gap-4">
+              <div className="min-w-0 pr-2">
+                <span className={`font-mono font-normal text-xs block ${isDark ? 'text-stone-100' : 'text-stone-950'}`}>
+                  Continuous Chapter Playback
+                </span>
+                <span className={`text-[11px] font-normal block mt-0.5 leading-relaxed ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                  Automatically narrate the next chapter when one completes
                 </span>
               </div>
-              <button
-                type="button"
-                onClick={() => setAutoAdvanceChapter(!autoAdvanceChapter)}
-                className={`w-11 h-6 rounded-full transition-colors relative p-0.5 ${
-                  autoAdvanceChapter ? (isDark ? 'bg-amber-400' : 'bg-stone-900') : (isDark ? 'bg-stone-800' : 'bg-stone-300')
-                }`}
-              >
-                <div
-                  className={`w-5 h-5 rounded-full bg-white transition-transform ${
-                    autoAdvanceChapter ? 'translate-x-5' : 'translate-x-0'
-                  }`}
-                />
-              </button>
+              <ToggleSwitch
+                checked={autoAdvanceChapter}
+                onChange={() => setAutoAdvanceChapter(!autoAdvanceChapter)}
+                ariaLabel="Toggle continuous chapter playback"
+                isDark={isDark}
+              />
             </div>
           </div>
-        </section>
+        </>
+      )}
 
-        {/* ============================================================ */}
-        {/* HUB SECTION 5: DATA & MARGINALIA */}
-        {/* ============================================================ */}
-        <section className="pt-2">
-          <div className="flex items-center gap-2 mb-2.5">
-            <FileText className={`w-4 h-4 ${isDark ? 'text-amber-400' : 'text-amber-800'}`} />
-            <h2 className="text-sm font-serif font-semibold">Data, Marginalia & Goals</h2>
-          </div>
+      {/* ========================================================================= */}
+      {/* 6. DEDICATED PAGE: DATA & MARGINALIA                                     */}
+      {/* ========================================================================= */}
+      {currentPage === 'data' && (
+        <>
+          {renderSubPageHeader('Data & Marginalia')}
 
-          <div
-            className={`rounded-2xl border divide-y overflow-hidden shadow-2xs ${
-              isDark ? 'bg-[#18181C] border-stone-800 divide-stone-800/80' : 'bg-white border-stone-200/90 divide-stone-100'
-            }`}
-          >
+          {/* Full Screen Layout Merging into Screen with delicate hairline dividers */}
+          <div className="w-full divide-y divide-stone-200/20 dark:divide-stone-800/25">
             {/* Export Notes */}
-            <div className="p-3.5 flex items-center justify-between">
-              <div>
-                <span className="text-xs font-medium block">Export Marginalia Ledger</span>
-                <span className={`text-[11px] block mt-0.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
-                  Download highlights & annotations in Markdown format
+            <div className="px-4 sm:px-5 py-4 flex items-center justify-between gap-4">
+              <div className="min-w-0 pr-2">
+                <span className={`font-mono font-normal text-xs block ${isDark ? 'text-stone-100' : 'text-stone-950'}`}>
+                  Export Marginalia Ledger
+                </span>
+                <span className={`text-[11px] font-normal block mt-0.5 leading-relaxed ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                  Export saved quotes and marginalia to Markdown file
                 </span>
               </div>
               <button
                 type="button"
                 onClick={handleExportNotes}
-                className={`min-h-[36px] px-3 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors border ${
+                className={`min-h-[32px] px-3 rounded-lg text-xs font-mono font-normal flex items-center gap-1.5 transition-colors border cursor-pointer shrink-0 ${
                   notesExported
                     ? 'bg-emerald-600 text-white border-emerald-600'
                     : isDark
-                    ? 'bg-stone-800 border-stone-700 text-stone-200 hover:bg-stone-700'
-                    : 'bg-stone-100 border-stone-300 text-stone-800 hover:bg-stone-200'
+                    ? 'border-stone-800 bg-stone-900 text-stone-200 hover:bg-stone-800'
+                    : 'border-stone-300 bg-white text-stone-700 hover:bg-stone-100'
                 }`}
               >
                 {notesExported ? <Check className="w-3.5 h-3.5" /> : <Download className="w-3.5 h-3.5" />}
@@ -852,31 +964,33 @@ export const ScreenSettings: React.FC<ScreenSettingsProps> = ({
             </div>
 
             {/* 2026 Reading Milestone Target */}
-            <div className="p-3.5 flex items-center justify-between">
-              <div>
-                <span className="text-xs font-medium block">2026 Reading Target</span>
-                <span className={`text-[11px] block mt-0.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
-                  Annual curated monographs goal
+            <div className="px-4 sm:px-5 py-4 flex items-center justify-between gap-4">
+              <div className="min-w-0 pr-2">
+                <span className={`font-mono font-normal text-xs block ${isDark ? 'text-stone-100' : 'text-stone-950'}`}>
+                  Annual Reading Target
+                </span>
+                <span className={`text-[11px] font-normal block mt-0.5 leading-relaxed ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                  Target number of completed novels
                 </span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 shrink-0">
                 <button
                   type="button"
                   onClick={() => setReadingGoal((prev) => Math.max(5, prev - 5))}
-                  className={`min-h-[32px] min-w-[32px] rounded-md border flex items-center justify-center font-mono ${
-                    isDark ? 'border-stone-700 bg-stone-800 text-stone-200' : 'border-stone-300 bg-stone-100 text-stone-800'
+                  className={`min-h-[30px] min-w-[30px] rounded-md border flex items-center justify-center font-mono text-xs cursor-pointer ${
+                    isDark ? 'border-stone-800 bg-stone-900 text-stone-300' : 'border-stone-300 bg-stone-100 text-stone-800'
                   }`}
                 >
                   -
                 </button>
-                <span className="font-mono text-xs font-semibold tabular-nums px-1">
+                <span className="font-mono text-xs tabular-nums px-1.5 text-amber-500 dark:text-amber-400">
                   {readingGoal} Books
                 </span>
                 <button
                   type="button"
                   onClick={() => setReadingGoal((prev) => Math.min(100, prev + 5))}
-                  className={`min-h-[32px] min-w-[32px] rounded-md border flex items-center justify-center font-mono ${
-                    isDark ? 'border-stone-700 bg-stone-800 text-stone-200' : 'border-stone-300 bg-stone-100 text-stone-800'
+                  className={`min-h-[30px] min-w-[30px] rounded-md border flex items-center justify-center font-mono text-xs cursor-pointer ${
+                    isDark ? 'border-stone-800 bg-stone-900 text-stone-300' : 'border-stone-300 bg-stone-100 text-stone-800'
                   }`}
                 >
                   +
@@ -884,22 +998,52 @@ export const ScreenSettings: React.FC<ScreenSettingsProps> = ({
               </div>
             </div>
           </div>
-        </section>
+        </>
+      )}
 
-        {/* System & Engine Info */}
-        <footer className="pt-4 text-center">
-          <div className="inline-flex items-center gap-1.5 text-xs font-serif font-semibold">
-            <span className={isDark ? 'text-amber-400' : 'text-amber-800'}>FOLIO</span>
-            <span className={isDark ? 'text-stone-300' : 'text-stone-700'}>· Minimalist Monograph Engine</span>
+      {/* ========================================================================= */}
+      {/* 7. DEDICATED PAGE: ABOUT FOLIO ENGINE                                    */}
+      {/* ========================================================================= */}
+      {currentPage === 'about' && (
+        <>
+          {renderSubPageHeader('About Folio')}
+
+          {/* Full Screen Layout Merging into Screen with delicate hairline dividers */}
+          <div className="w-full divide-y divide-stone-200/20 dark:divide-stone-800/25">
+            <div className="px-4 sm:px-5 py-4 flex items-center gap-3">
+              <BookOpen className={`w-4 h-4 shrink-0 ${isDark ? 'text-amber-400' : 'text-stone-700'}`} />
+              <div>
+                <h3 className={`font-mono text-xs font-normal ${isDark ? 'text-stone-100' : 'text-stone-950'}`}>Folio Reading Architecture</h3>
+                <span className="text-[10px] font-mono text-stone-400">Release 2026.10 · Atelier Core</span>
+              </div>
+            </div>
+
+            <div className="px-4 sm:px-5 py-4 space-y-2 text-xs font-normal leading-relaxed text-stone-600 dark:text-stone-300">
+              <p>
+                Folio is designed around the principles of architectural restraint, negative space, and sensory e-ink typography.
+              </p>
+              <p>
+                Built with high optical fidelity fonts: Newsreader Serif, Playfair Display, and JetBrains Mono.
+              </p>
+            </div>
+
+            <div className="px-4 sm:px-5 py-4 space-y-2 text-[11px] font-mono text-stone-500 dark:text-stone-400">
+              <div className="flex justify-between">
+                <span>Engine:</span>
+                <span>React 19 + TypeScript</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Storage:</span>
+                <span>Offline Web Storage</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Typography:</span>
+                <span>Variable Optical Size 6-72pt</span>
+              </div>
+            </div>
           </div>
-          <p className="text-[11px] font-mono text-stone-400 mt-1">
-            Build 2026.10 · Preferences Hub v2.5
-          </p>
-          <p className="text-[10px] text-stone-500 mt-0.5">
-            Designed for tactile reading stillness and sensory typography.
-          </p>
-        </footer>
-      </div>
+        </>
+      )}
     </div>
   );
 };

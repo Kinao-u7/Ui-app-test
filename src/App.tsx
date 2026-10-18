@@ -10,10 +10,11 @@ import { ScreenBookshelf } from './screens/ScreenBookshelf';
 import { ScreenAudioPlayer } from './screens/ScreenAudioPlayer';
 import { ScreenSceneStudio } from './screens/ScreenSceneStudio';
 import { ScreenSettings } from './screens/ScreenSettings';
+import { ScreenDownloads } from './screens/ScreenDownloads';
 import { DesignSystemInspector } from './components/DesignSystemInspector';
-import { Smartphone, LayoutGrid, Palette, Sun, Moon, Settings } from 'lucide-react';
+import { Smartphone, LayoutGrid, Palette, Sun, Moon, Settings, ArrowDownToLine, Compass, Library } from 'lucide-react';
 
-export type ScreenId = 'explore' | 'detail' | 'reader' | 'contents' | 'shelf' | 'audio' | 'studio' | 'settings';
+export type ScreenId = 'explore' | 'detail' | 'reader' | 'contents' | 'shelf' | 'audio' | 'studio' | 'settings' | 'downloads';
 
 export default function App() {
   // Navigation & Screen State - default to 'shelf' (Library)
@@ -51,22 +52,20 @@ export default function App() {
   // Active book list state
   const [books, setBooks] = useState<Book[]>(NOVEL_BOOKS);
 
-  // Map ScreenId to Bottom Nav Tab
+  // Map ScreenId to 4 Bottom Nav Tabs: Library | Discover | Downloads | Settings
   const getNavTabFromScreen = (screen: ScreenId): NavTab => {
     switch (screen) {
       case 'shelf':
-        return 'shelf';
       case 'reader':
-        return 'reader';
+      case 'contents':
+        return 'shelf';
       case 'explore':
       case 'detail':
-        return 'explore';
-      case 'contents':
-        return 'contents';
-      case 'audio':
-        return 'audio';
       case 'studio':
-        return 'studio';
+        return 'explore';
+      case 'downloads':
+      case 'audio':
+        return 'downloads';
       case 'settings':
         return 'settings';
       default:
@@ -79,20 +78,11 @@ export default function App() {
       case 'shelf':
         setCurrentScreen('shelf');
         break;
-      case 'reader':
-        setCurrentScreen('reader');
-        break;
       case 'explore':
         setCurrentScreen('explore');
         break;
-      case 'contents':
-        setCurrentScreen('contents');
-        break;
-      case 'audio':
-        setCurrentScreen('audio');
-        break;
-      case 'studio':
-        setCurrentScreen('studio');
+      case 'downloads':
+        setCurrentScreen('downloads');
         break;
       case 'settings':
         setCurrentScreen('settings');
@@ -107,6 +97,52 @@ export default function App() {
     setSelectedBook(prev => ({ ...prev, coverImage: imageUrl }));
   };
 
+  const handleSaveQuote = (quote: {
+    text: string;
+    chapter?: string;
+    page?: number;
+    note?: string;
+    color?: 'amber' | 'ink' | 'sage';
+  }) => {
+    const newQuote = {
+      id: `quote-${Date.now()}`,
+      text: quote.text,
+      chapter: quote.chapter || 'Chapter 3: Salt and Shadow',
+      page: quote.page || 114,
+      note: quote.note || 'Saved from reader selection',
+      color: quote.color || 'amber' as const,
+      timestamp: 'Just now'
+    };
+
+    setBooks(prev =>
+      prev.map(b =>
+        b.id === selectedBook.id
+          ? { ...b, savedQuotes: [newQuote, ...(b.savedQuotes || [])] }
+          : b
+      )
+    );
+
+    setSelectedBook(prev => ({
+      ...prev,
+      savedQuotes: [newQuote, ...(prev.savedQuotes || [])]
+    }));
+  };
+
+  const handleDeleteQuote = (quoteId: string) => {
+    setBooks(prev =>
+      prev.map(b =>
+        b.id === selectedBook.id
+          ? { ...b, savedQuotes: (b.savedQuotes || []).filter(q => q.id !== quoteId) }
+          : b
+      )
+    );
+
+    setSelectedBook(prev => ({
+      ...prev,
+      savedQuotes: (prev.savedQuotes || []).filter(q => q.id !== quoteId)
+    }));
+  };
+
   // Render a specific screen by screen id
   const renderScreenContent = (screenId: ScreenId, isInteractive: boolean = true) => {
     switch (screenId) {
@@ -114,6 +150,7 @@ export default function App() {
         return (
           <>
             <ScreenBookshelf
+              books={books}
               onSelectBook={(book) => {
                 setSelectedBook(book);
                 setCurrentScreen('detail');
@@ -123,11 +160,37 @@ export default function App() {
                 setCurrentScreen('reader');
               }}
               onOpenSettings={() => setCurrentScreen('settings')}
+              onOpenDiscover={() => setCurrentScreen('explore')}
+              onRestoreBooks={() => setBooks(NOVEL_BOOKS)}
+              onClearLibrary={() => setBooks([])}
               isDark={isDarkMode}
               onToggleDarkMode={toggleDarkMode}
             />
             <MobileBottomNav
               activeTab="shelf"
+              onSelectTab={handleBottomNavSelect}
+              isDark={isDarkMode}
+            />
+          </>
+        );
+
+      case 'downloads':
+        return (
+          <>
+            <ScreenDownloads
+              onOpenReader={(book) => {
+                setSelectedBook(book);
+                setCurrentScreen('reader');
+              }}
+              onSelectBook={(book) => {
+                setSelectedBook(book);
+                setCurrentScreen('detail');
+              }}
+              onOpenDiscover={() => setCurrentScreen('explore')}
+              isDark={isDarkMode}
+            />
+            <MobileBottomNav
+              activeTab="downloads"
               onSelectTab={handleBottomNavSelect}
               isDark={isDarkMode}
             />
@@ -145,11 +208,12 @@ export default function App() {
                 setStudioPrompt(p);
                 setCurrentScreen('studio');
               }}
+              onSaveQuote={handleSaveQuote}
               isDark={isDarkMode}
               onToggleDarkMode={toggleDarkMode}
             />
             <MobileBottomNav
-              activeTab="reader"
+              activeTab="shelf"
               onSelectTab={handleBottomNavSelect}
               isDark={isDarkMode}
             />
@@ -195,10 +259,11 @@ export default function App() {
                 setStudioPrompt(q.text);
                 setCurrentScreen('studio');
               }}
+              onDeleteQuote={handleDeleteQuote}
               isDark={isDarkMode}
             />
             <MobileBottomNav
-              activeTab="contents"
+              activeTab="shelf"
               onSelectTab={handleBottomNavSelect}
               isDark={isDarkMode}
             />
@@ -217,7 +282,7 @@ export default function App() {
               }}
             />
             <MobileBottomNav
-              activeTab="audio"
+              activeTab="downloads"
               isDark={isDarkMode}
               onSelectTab={handleBottomNavSelect}
             />
@@ -234,7 +299,7 @@ export default function App() {
               isDark={isDarkMode}
             />
             <MobileBottomNav
-              activeTab="studio"
+              activeTab="explore"
               onSelectTab={handleBottomNavSelect}
               isDark={isDarkMode}
             />
@@ -284,14 +349,15 @@ export default function App() {
   };
 
   const screensMeta: Array<{ id: ScreenId; title: string; num: number; desc: string }> = [
-    { id: 'shelf', title: 'Library', num: 1, desc: '3x3 minimal grid, continue reading hero, list switcher' },
-    { id: 'reader', title: 'Reader Chamber', num: 2, desc: 'Distraction-free e-ink reader with margins and typography controls' },
-    { id: 'explore', title: 'Sanctuary to discover', num: 3, desc: 'Curated editions, author spotlight, and discovery catalog' },
-    { id: 'contents', title: 'Index & Marginalia', num: 4, desc: 'Chapter timeline, saved quotes, and bookmarks' },
-    { id: 'audio', title: 'Whisper Studio', num: 5, desc: 'Ambient soundscape and audiobook player' },
-    { id: 'studio', title: 'Scene Studio', num: 6, desc: 'Literary illustration and book cover art laboratory' },
-    { id: 'settings', title: 'Preferences Hub', num: 7, desc: 'Appearance, reader typography, offline downloads & TTS narration hub' },
-    { id: 'detail', title: 'Novel Details', num: 8, desc: 'Clean monograph presentation and unadorned chapter sequence' },
+    { id: 'shelf', title: 'Library', num: 1, desc: '3x3 minimal grid, continue reading hero, list switcher & empty state' },
+    { id: 'explore', title: 'Discover', num: 2, desc: 'Curated editions, author spotlight, and discovery catalog' },
+    { id: 'downloads', title: 'Downloads', num: 3, desc: 'Offline storage vault, cached chapters, and auto-download management' },
+    { id: 'settings', title: 'Settings', num: 4, desc: 'Appearance, reader typography, offline downloads & TTS narration hub' },
+    { id: 'reader', title: 'Reader Chamber', num: 5, desc: 'Distraction-free e-ink reader with margins and typography controls' },
+    { id: 'detail', title: 'Novel Details', num: 6, desc: 'Clean monograph presentation and unadorned chapter sequence' },
+    { id: 'contents', title: 'Index & Marginalia', num: 7, desc: 'Chapter timeline, saved quotes, and bookmarks' },
+    { id: 'audio', title: 'Whisper Studio', num: 8, desc: 'Ambient soundscape and audiobook player' },
+    { id: 'studio', title: 'Scene Studio', num: 9, desc: 'Literary illustration and book cover art laboratory' },
   ];
 
   return (
@@ -325,7 +391,7 @@ export default function App() {
           <button
             type="button"
             onClick={() => setViewMode('simulator')}
-            className={`transition-colors flex items-center gap-1.5 ${
+            className={`transition-colors flex items-center gap-1.5 cursor-pointer ${
               viewMode === 'simulator'
                 ? isDarkMode ? 'text-amber-400 font-semibold' : 'text-stone-950 font-semibold'
                 : isDarkMode ? 'hover:text-stone-200' : 'hover:text-stone-950'
@@ -338,7 +404,7 @@ export default function App() {
           <button
             type="button"
             onClick={() => setViewMode('artboard')}
-            className={`transition-colors flex items-center gap-1.5 ${
+            className={`transition-colors flex items-center gap-1.5 cursor-pointer ${
               viewMode === 'artboard'
                 ? isDarkMode ? 'text-amber-400 font-semibold' : 'text-stone-950 font-semibold'
                 : isDarkMode ? 'hover:text-stone-200' : 'hover:text-stone-950'
@@ -354,7 +420,7 @@ export default function App() {
               setCurrentScreen('settings');
               setViewMode('simulator');
             }}
-            className={`transition-colors flex items-center gap-1.5 ${
+            className={`transition-colors flex items-center gap-1.5 cursor-pointer ${
               currentScreen === 'settings'
                 ? isDarkMode ? 'text-amber-400 font-semibold' : 'text-stone-950 font-semibold'
                 : isDarkMode ? 'hover:text-stone-200' : 'hover:text-stone-950'
@@ -367,7 +433,7 @@ export default function App() {
           <button
             type="button"
             onClick={() => setIsInspectorOpen(true)}
-            className={`transition-colors flex items-center gap-1.5 ${isDarkMode ? 'hover:text-stone-200' : 'hover:text-stone-950'}`}
+            className={`transition-colors flex items-center gap-1.5 cursor-pointer ${isDarkMode ? 'hover:text-stone-200' : 'hover:text-stone-950'}`}
           >
             <Palette className="w-3.5 h-3.5" />
             <span>Design Tokens</span>
@@ -381,7 +447,7 @@ export default function App() {
             type="button"
             onClick={toggleDarkMode}
             aria-label={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            className={`min-h-[36px] px-2.5 py-1 text-xs font-medium rounded-lg border flex items-center gap-1.5 transition-colors ${
+            className={`min-h-[36px] px-2.5 py-1 text-xs font-medium rounded-lg border flex items-center gap-1.5 transition-colors cursor-pointer ${
               isDarkMode
                 ? 'bg-stone-900 border-stone-700 text-amber-400 hover:bg-stone-800'
                 : 'bg-white border-stone-300 text-stone-700 hover:bg-stone-100'
@@ -417,7 +483,7 @@ export default function App() {
           <button
             type="button"
             onClick={() => setIsInspectorOpen(true)}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors whitespace-nowrap shadow-xs ${
+            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors whitespace-nowrap shadow-xs cursor-pointer ${
               isDarkMode
                 ? 'bg-amber-400 text-stone-950 font-semibold hover:bg-amber-300'
                 : 'bg-stone-900 text-white hover:bg-stone-800'
@@ -438,10 +504,10 @@ export default function App() {
       >
         <div className="flex items-center gap-2">
           <span className={`font-mono text-[11px] font-semibold uppercase tracking-wider ${isDarkMode ? 'text-amber-400' : 'text-stone-700'}`}>
-            Bottom Nav:
+            Bottom Nav (4):
           </span>
           <span className="font-mono text-[11px]">
-            Library · Reader · Sanctuary to discover · Index · Audio · Studio · Settings
+            Library · Discover · Downloads · Settings
           </span>
         </div>
 
@@ -454,26 +520,26 @@ export default function App() {
           <button
             type="button"
             onClick={() => setViewMode('simulator')}
-            className={`px-3 py-1 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5 ${
+            className={`px-3 py-1 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5 cursor-pointer ${
               viewMode === 'simulator'
                 ? isDarkMode ? 'bg-stone-800 text-amber-400 shadow-xs' : 'bg-white text-stone-950 shadow-xs'
                 : isDarkMode ? 'text-stone-400 hover:text-stone-200' : 'text-stone-600 hover:text-stone-950'
             }`}
           >
             <Smartphone className="w-3.5 h-3.5" />
-            <span>Interactive Simulator</span>
+            <span>Simulator</span>
           </button>
           <button
             type="button"
             onClick={() => setViewMode('artboard')}
-            className={`px-3 py-1 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5 ${
+            className={`px-3 py-1 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5 cursor-pointer ${
               viewMode === 'artboard'
                 ? isDarkMode ? 'bg-stone-800 text-amber-400 shadow-xs' : 'bg-white text-stone-950 shadow-xs'
                 : isDarkMode ? 'text-stone-400 hover:text-stone-200' : 'text-stone-600 hover:text-stone-950'
             }`}
           >
             <LayoutGrid className="w-3.5 h-3.5" />
-            <span>All Screens View</span>
+            <span>All 9 Screens</span>
           </button>
         </div>
       </div>
@@ -511,7 +577,7 @@ export default function App() {
                   key={s.id}
                   type="button"
                   onClick={() => setCurrentScreen(s.id)}
-                  className={`min-h-[40px] px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  className={`min-h-[40px] px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
                     currentScreen === s.id
                       ? isDarkMode
                         ? 'bg-amber-400 text-stone-950 font-semibold shadow-sm'
@@ -535,14 +601,14 @@ export default function App() {
                 Complete UI Kit Specification
               </span>
               <h2 className={`font-serif text-3xl font-bold tracking-tight ${isDarkMode ? 'text-stone-100' : 'text-stone-900'}`}>
-                All Eight Screens of Folio
+                All Nine Screens of Folio
               </h2>
               <p className={`text-xs mt-2 leading-relaxed ${isDarkMode ? 'text-stone-400' : 'text-stone-600'}`}>
-                Complete minimalist novel reading ecosystem featuring 3x3 minimal library grid, continue reading hero, full navigation tabs, and dedicated settings screen.
+                Complete minimalist novel reading ecosystem featuring 4-tab mobile bottom navigation (Library, Discover, Downloads, Settings), empty library state, offline vault, and e-ink reader.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 justify-items-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8 justify-items-center">
               {screensMeta.map((screen) => (
                 <div key={screen.id} className="flex flex-col items-center">
                   <DeviceFrame
@@ -580,7 +646,7 @@ export default function App() {
         }`}
       >
         <p>
-          Folio Minimalist Novel Reading Experience · Library, Reader, Sanctuary to discover, Index, Audio, Studio & Settings
+          Folio Minimalist Novel Reading Experience · 4-Tab Navigation: Library · Discover · Downloads · Settings
         </p>
       </footer>
     </div>

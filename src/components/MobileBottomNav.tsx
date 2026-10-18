@@ -1,7 +1,7 @@
 import React from 'react';
-import { Compass, BookOpen, Bookmark, Headphones, Sparkles, Settings, BookmarkCheck } from 'lucide-react';
+import { Library, Compass, ArrowDownToLine, Settings } from 'lucide-react';
 
-export type NavTab = 'shelf' | 'reader' | 'explore' | 'contents' | 'audio' | 'studio' | 'settings';
+export type NavTab = 'shelf' | 'explore' | 'downloads' | 'settings';
 
 interface MobileBottomNavProps {
   activeTab: NavTab;
@@ -15,12 +15,9 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   isDark = false
 }) => {
   const tabs = [
-    { id: 'shelf' as NavTab, label: 'Library', icon: Bookmark },
-    { id: 'reader' as NavTab, label: 'Reader', icon: BookOpen },
+    { id: 'shelf' as NavTab, label: 'Library', icon: Library },
     { id: 'explore' as NavTab, label: 'Discover', icon: Compass },
-    { id: 'contents' as NavTab, label: 'Index', icon: BookmarkCheck },
-    { id: 'audio' as NavTab, label: 'Audio', icon: Headphones },
-    { id: 'studio' as NavTab, label: 'Studio', icon: Sparkles },
+    { id: 'downloads' as NavTab, label: 'Downloads', icon: ArrowDownToLine },
     { id: 'settings' as NavTab, label: 'Settings', icon: Settings },
   ];
 
@@ -31,7 +28,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
         isDark
           ? 'bg-[#000000]/95 border-neutral-900 text-stone-400'
           : 'bg-[#FAF8F5]/95 border-stone-200/80 text-stone-500'
-      } backdrop-blur-md grid grid-cols-7 items-center px-1 z-20`}
+      } backdrop-blur-md grid grid-cols-4 items-center px-4 z-20`}
     >
       {tabs.map((tab) => {
         const Icon = tab.icon;
@@ -41,7 +38,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
             key={tab.id}
             type="button"
             onClick={() => onSelectTab(tab.id)}
-            className={`min-h-[48px] w-full flex flex-col items-center justify-center relative transition-transform active:scale-95 ${
+            className={`min-h-[48px] w-full flex flex-col items-center justify-center relative transition-transform active:scale-95 cursor-pointer ${
               isActive
                 ? isDark
                   ? 'text-amber-400 font-semibold'
@@ -53,7 +50,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           >
             <div className="relative">
               <Icon
-                className={`w-[17px] h-[17px] transition-transform ${
+                className={`w-[19px] h-[19px] transition-transform ${
                   isActive ? 'scale-110 stroke-[2.2]' : 'stroke-[1.8]'
                 }`}
               />
@@ -66,7 +63,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
               )}
             </div>
             <span
-              className={`text-[8.5px] tracking-tight mt-1 text-center truncate w-full px-0.5 leading-none ${
+              className={`text-[9.5px] tracking-tight mt-1 text-center truncate w-full px-0.5 leading-none ${
                 isActive ? 'font-semibold' : 'font-normal'
               }`}
             >

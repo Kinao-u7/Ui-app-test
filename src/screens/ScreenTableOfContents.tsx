@@ -7,13 +7,15 @@ interface ScreenTableOfContentsProps {
   onBack: () => void;
   onSelectChapter: (chapter: Chapter) => void;
   onSelectQuote?: (quote: SavedQuote) => void;
+  isDark?: boolean;
 }
 
 export const ScreenTableOfContents: React.FC<ScreenTableOfContentsProps> = ({
   book,
   onBack,
   onSelectChapter,
-  onSelectQuote
+  onSelectQuote,
+  isDark = false
 }) => {
   const [activeTab, setActiveTab] = useState<'chapters' | 'quotes' | 'bookmarks'>('chapters');
   const [searchQuery, setSearchQuery] = useState('');
@@ -36,9 +38,19 @@ export const ScreenTableOfContents: React.FC<ScreenTableOfContentsProps> = ({
   );
 
   return (
-    <div className="flex-1 flex flex-col bg-[#FAF8F5] text-stone-900 overflow-y-auto pb-6">
+    <div
+      className={`flex-1 flex flex-col transition-colors duration-200 overflow-y-auto pb-6 ${
+        isDark ? 'bg-[#000000] text-stone-100' : 'bg-[#FAF8F5] text-stone-900'
+      }`}
+    >
       {/* Top App Bar Contract */}
-      <header className="px-4 py-2 border-b border-stone-200/70 sticky top-0 bg-[#FAF8F5]/90 backdrop-blur-md z-10 flex items-center justify-between">
+      <header
+        className={`px-4 py-2 border-b sticky top-0 backdrop-blur-md z-10 flex items-center justify-between ${
+          isDark
+            ? 'bg-[#000000]/90 border-neutral-900 text-stone-100'
+            : 'bg-[#FAF8F5]/90 border-stone-200/70 text-stone-900'
+        }`}
+      >
         <button
           type="button"
           onClick={onBack}

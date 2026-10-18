@@ -51,9 +51,9 @@ export const ScreenAudioPlayer: React.FC<ScreenAudioPlayerProps> = ({
   ];
 
   return (
-    <div className="flex-1 flex flex-col bg-[#141312] text-stone-100 overflow-y-auto pb-6 select-none">
+    <div className="flex-1 flex flex-col bg-[#000000] text-stone-100 overflow-y-auto pb-6 select-none">
       {/* Top Header */}
-      <header className="px-4 py-2 border-b border-stone-800/80 sticky top-0 bg-[#141312]/90 backdrop-blur-md z-10 flex items-center justify-between">
+      <header className="px-4 py-2 border-b border-neutral-900 sticky top-0 bg-[#000000]/90 backdrop-blur-md z-10 flex items-center justify-between">
         <button
           type="button"
           onClick={onBack}

@@ -7,15 +7,27 @@ interface ScreenReaderProps {
   onBack: () => void;
   onOpenStudioWithPrompt?: (prompt: string) => void;
   onOpenTableOfContents: () => void;
+  isDark?: boolean;
+  onToggleDarkMode?: () => void;
 }
 
 export const ScreenReader: React.FC<ScreenReaderProps> = ({
   book,
   onBack,
   onOpenStudioWithPrompt,
-  onOpenTableOfContents
+  onOpenTableOfContents,
+  isDark = false,
+  onToggleDarkMode
 }) => {
-  const [currentThemeKey, setCurrentThemeKey] = useState<string>('alabaster');
+  const [currentThemeKey, setCurrentThemeKey] = useState<string>(isDark ? 'oled' : 'alabaster');
+
+  React.useEffect(() => {
+    if (isDark && currentThemeKey === 'alabaster') {
+      setCurrentThemeKey('oled');
+    } else if (!isDark && currentThemeKey === 'oled') {
+      setCurrentThemeKey('alabaster');
+    }
+  }, [isDark]);
   const [fontSize, setFontSize] = useState<number>(17);
   const [fontFamily, setFontFamily] = useState<'serif' | 'display' | 'sans' | 'mono'>('serif');
   const [lineHeight, setLineHeight] = useState<'relaxed' | 'loose' | 'normal'>('relaxed');

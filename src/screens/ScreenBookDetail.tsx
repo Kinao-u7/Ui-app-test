@@ -1,217 +1,240 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Bookmark, Share2, Star, BookOpen, Headphones, Clock, CheckCircle2, ChevronRight, Sparkles } from 'lucide-react';
+import { ArrowLeft, Bookmark, Star, BookOpen, CheckCircle2, ChevronRight, Moon, Sun } from 'lucide-react';
 import { Book } from '../data/novelData';
 
 interface ScreenBookDetailProps {
   book: Book;
   onBack: () => void;
   onOpenReader: (book: Book) => void;
-  onOpenAudio: (book: Book) => void;
-  onOpenStudio: () => void;
+  onOpenAudio?: (book: Book) => void;
+  onOpenStudio?: () => void;
+  isDark?: boolean;
+  onToggleDarkMode?: () => void;
 }
 
 export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
   book,
   onBack,
   onOpenReader,
-  onOpenAudio,
-  onOpenStudio
+  isDark = false,
+  onToggleDarkMode
 }) => {
   const [isSaved, setIsSaved] = useState(true);
   const [isSynopsisExpanded, setIsSynopsisExpanded] = useState(false);
 
   return (
-    <div className="flex-1 flex flex-col bg-[#FAF8F5] text-stone-900 overflow-y-auto pb-8">
-      {/* Top App Bar Contract */}
-      <header className="px-4 py-2 border-b border-stone-200/60 sticky top-0 bg-[#FAF8F5]/90 backdrop-blur-md z-10 flex items-center justify-between">
+    <div
+      className={`flex-1 flex flex-col transition-colors duration-300 overflow-y-auto pb-10 relative select-none ${
+        isDark ? 'bg-[#000000] text-stone-100' : 'bg-[#FAF8F5] text-stone-900'
+      }`}
+    >
+      {/* Ambient Atmospheric Backdrop Glow (Merges cover colors softly into background) */}
+      <div
+        className="absolute top-0 inset-x-0 h-96 pointer-events-none opacity-25 blur-3xl transition-opacity"
+        style={{
+          background: isDark
+            ? 'radial-gradient(circle at 50% 20%, rgba(217, 119, 6, 0.25), rgba(0,0,0,0.85) 75%)'
+            : 'radial-gradient(circle at 50% 20%, rgba(217, 119, 6, 0.15), rgba(250, 248, 245, 0.9) 75%)',
+        }}
+      />
+
+      {/* Seamless Floating App Bar (No hard line border - floats naturally) */}
+      <header className="px-4 pt-3 pb-2 sticky top-0 z-20 flex items-center justify-between backdrop-blur-md bg-opacity-80">
         <button
           type="button"
           onClick={onBack}
-          aria-label="Back to Atelier"
-          className="min-h-[44px] min-w-[44px] flex items-center justify-center text-stone-700 hover:text-stone-900 rounded-full hover:bg-stone-200/50 transition-colors"
+          aria-label="Back"
+          className={`min-h-[42px] min-w-[42px] flex items-center justify-center rounded-full transition-all ${
+            isDark
+              ? 'text-stone-300 hover:text-white bg-white/5 hover:bg-white/10'
+              : 'text-stone-700 hover:text-stone-900 bg-stone-900/5 hover:bg-stone-900/10'
+          }`}
         >
           <ArrowLeft className="w-4 h-4 stroke-[2]" />
         </button>
 
-        <span className="text-xs font-serif font-semibold tracking-tight text-stone-900 truncate max-w-[180px]">
+        <span
+          className={`text-xs font-serif font-medium tracking-tight truncate max-w-[180px] opacity-80 ${
+            isDark ? 'text-stone-200' : 'text-stone-800'
+          }`}
+        >
           {book.title}
         </span>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
+          {onToggleDarkMode && (
+            <button
+              type="button"
+              onClick={onToggleDarkMode}
+              aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+              className={`min-h-[42px] min-w-[42px] flex items-center justify-center rounded-full transition-all ${
+                isDark
+                  ? 'text-amber-400 bg-white/5 hover:bg-white/10'
+                  : 'text-stone-600 bg-stone-900/5 hover:bg-stone-900/10'
+              }`}
+            >
+              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+          )}
+
           <button
             type="button"
             onClick={() => setIsSaved(!isSaved)}
-            aria-label="Save to Sanctuary"
-            className="min-h-[44px] min-w-[44px] flex items-center justify-center text-stone-700 hover:text-stone-900 rounded-full hover:bg-stone-200/50 transition-colors"
+            aria-label="Save book"
+            className={`min-h-[42px] min-w-[42px] flex items-center justify-center rounded-full transition-all ${
+              isDark
+                ? 'text-stone-300 hover:text-white bg-white/5 hover:bg-white/10'
+                : 'text-stone-700 hover:text-stone-900 bg-stone-900/5 hover:bg-stone-900/10'
+            }`}
           >
-            <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-stone-900 text-stone-900' : ''}`} />
+            <Bookmark className={`w-4 h-4 ${isSaved ? (isDark ? 'fill-amber-400 text-amber-400' : 'fill-stone-900 text-stone-900') : ''}`} />
           </button>
         </div>
       </header>
 
-      {/* Book Cover Presentation Anchor */}
-      <div className="pt-6 pb-4 px-6 flex flex-col items-center text-center">
-        <div className="relative w-36 h-52 rounded-xl overflow-hidden shadow-2xl bg-stone-200 border border-stone-300/60 mb-5 group">
+      {/* Book Cover Presentation Anchor (Seamless Hero Flow) */}
+      <div className="pt-2 pb-5 px-6 flex flex-col items-center text-center relative z-10">
+        <div
+          className={`relative w-40 h-56 rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 group ${
+            isDark
+              ? 'shadow-[0_20px_50px_rgba(0,0,0,0.9)] ring-1 ring-white/10'
+              : 'shadow-[0_20px_45px_rgba(40,30,20,0.18)] ring-1 ring-stone-900/5'
+          }`}
+        >
           <img
             src={book.coverImage}
             alt={book.title}
             referrerPolicy="no-referrer"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             onError={(e) => {
               (e.target as HTMLElement).style.display = 'none';
             }}
           />
-          {/* Tactile paper texture sheen */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-stone-950/20 via-transparent to-white/10 pointer-events-none" />
-          <div className="absolute top-0 right-3 w-3 h-6 bg-amber-700 shadow-md rounded-b-xs" />
+          {/* Subtle tactile gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-white/10 pointer-events-none" />
+          <div className="absolute top-0 right-3.5 w-3 h-6 bg-amber-600/90 shadow-md rounded-b-xs" />
         </div>
 
-        <span className="text-[11px] font-mono tracking-widest uppercase text-amber-800 mb-1">
+        {/* Seamless Typographic Deck */}
+        <span
+          className={`text-[11px] font-mono tracking-widest uppercase mt-5 mb-1.5 font-medium ${
+            isDark ? 'text-amber-400' : 'text-amber-800'
+          }`}
+        >
           {book.genre} · {book.publishedYear}
         </span>
-        <h1 className="font-serif text-2xl font-bold tracking-tight text-stone-900 text-balance leading-tight">
+
+        <h1
+          className={`font-serif text-2xl font-bold tracking-tight text-balance leading-snug px-2 ${
+            isDark ? 'text-white' : 'text-stone-900'
+          }`}
+        >
           {book.title}
         </h1>
-        <p className="text-xs font-medium text-stone-500 mt-1">
+
+        <p className={`text-xs font-medium mt-1.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
           by {book.author}
         </p>
 
-        {/* Unboxed Bibliographic Stats */}
-        <div className="flex items-center gap-2 text-xs text-stone-500 mt-3 font-mono tabular-nums">
+        {/* Minimal Unboxed Stats Pill */}
+        <div
+          className={`flex items-center gap-2.5 text-xs mt-3.5 px-3 py-1.5 rounded-full font-mono tabular-nums transition-colors ${
+            isDark ? 'bg-white/5 text-stone-300' : 'bg-stone-200/60 text-stone-600'
+          }`}
+        >
           <span>{book.totalPages} Pages</span>
-          <span aria-hidden="true">·</span>
+          <span className="opacity-40" aria-hidden="true">·</span>
           <span>{book.readTime}</span>
-          <span aria-hidden="true">·</span>
-          <span className="flex items-center gap-1 text-stone-800 font-semibold">
-            <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-            {book.rating} ({book.ratingCount.toLocaleString()})
+          <span className="opacity-40" aria-hidden="true">·</span>
+          <span className={`flex items-center gap-1 font-semibold ${isDark ? 'text-amber-400' : 'text-stone-800'}`}>
+            <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+            {book.rating}
           </span>
         </div>
       </div>
 
-      {/* Primary Action Buttons (Thumb Zone) */}
-      <div className="px-5 py-2 flex flex-col gap-2.5">
+      {/* Primary Action Button - Seamlessly integrated */}
+      <div className="px-6 py-2 relative z-10">
         <button
           type="button"
           onClick={() => onOpenReader(book)}
-          className="w-full min-h-[48px] bg-stone-900 text-stone-50 text-xs font-medium rounded-xl hover:bg-stone-800 transition-transform active:scale-[0.98] shadow-md flex items-center justify-center gap-2"
+          className={`w-full min-h-[50px] text-xs font-semibold rounded-2xl transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 shadow-lg ${
+            isDark
+              ? 'bg-amber-400 text-black hover:bg-amber-300 shadow-amber-950/20'
+              : 'bg-stone-900 text-white hover:bg-stone-800 shadow-stone-400/30'
+          }`}
         >
-          <BookOpen className="w-4 h-4" />
+          <BookOpen className="w-4 h-4 stroke-[2.2]" />
           <span>Enter Reading Chamber</span>
         </button>
-
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            onClick={() => onOpenAudio(book)}
-            className="min-h-[44px] bg-stone-200/80 text-stone-800 text-xs font-medium rounded-xl hover:bg-stone-300 transition-colors flex items-center justify-center gap-1.5"
-          >
-            <Headphones className="w-3.5 h-3.5" />
-            <span>Audiobook</span>
-          </button>
-          <button
-            type="button"
-            onClick={onOpenStudio}
-            className="min-h-[44px] bg-amber-50 border border-amber-200 text-amber-900 text-xs font-medium rounded-xl hover:bg-amber-100 transition-colors flex items-center justify-center gap-1.5"
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>AI Scene Art</span>
-          </button>
-        </div>
       </div>
 
-      {/* Curator's Note */}
-      <section className="px-5 pt-5">
-        <div className="bg-[#F4EFEA] border-l-2 border-stone-800 p-3.5 rounded-r-xl">
-          <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500 block mb-1">
-            Curator’s Monograph Preface
-          </span>
-          <p className="text-xs font-serif italic text-stone-700 leading-relaxed">
-            “{book.curatorNote}”
-          </p>
-        </div>
-      </section>
-
-      {/* Synopsis with read-more toggle */}
-      <section className="px-5 pt-5">
-        <h3 className="text-xs font-mono uppercase tracking-wider text-stone-400 mb-2">
-          Synopsis & Argument
+      {/* Synopsis Section - Seamlessly Blended */}
+      <section className="px-6 pt-6 relative z-10">
+        <h3 className={`text-[11px] font-mono uppercase tracking-widest mb-2 font-medium ${isDark ? 'text-stone-500' : 'text-stone-400'}`}>
+          Synopsis
         </h3>
-        <p className={`text-xs text-stone-700 leading-relaxed font-serif ${isSynopsisExpanded ? '' : 'line-clamp-3'}`}>
+        <p
+          className={`text-xs leading-relaxed font-serif transition-colors ${
+            isDark ? 'text-stone-300' : 'text-stone-700'
+          } ${isSynopsisExpanded ? '' : 'line-clamp-3'}`}
+        >
           {book.synopsis}
         </p>
         <button
           type="button"
           onClick={() => setIsSynopsisExpanded(!isSynopsisExpanded)}
-          className="text-[11px] font-medium text-stone-900 hover:underline mt-1 block"
+          className={`text-[11px] font-medium hover:underline mt-1.5 inline-block ${
+            isDark ? 'text-amber-400' : 'text-stone-900'
+          }`}
         >
           {isSynopsisExpanded ? 'Show Less' : 'Read Full Synopsis'}
         </button>
       </section>
 
-      {/* Chapter Index Preview */}
-      <section className="px-5 pt-6">
+      {/* Chapter Sequence - Smoothly Merged, No Boxy Borders */}
+      <section className="px-6 pt-7 relative z-10">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xs font-mono uppercase tracking-wider text-stone-400">
-            Chapter Sequence ({book.chapters.length})
+          <h3 className={`text-[11px] font-mono uppercase tracking-widest font-medium ${isDark ? 'text-stone-500' : 'text-stone-400'}`}>
+            Chapter Sequence
           </h3>
-          <span className="text-[11px] font-mono text-stone-400">
-            Unabridged
+          <span className={`text-[11px] font-mono tabular-nums ${isDark ? 'text-stone-500' : 'text-stone-400'}`}>
+            {book.chapters.length} Chapters
           </span>
         </div>
 
-        <div className="divide-y divide-stone-200/70 border-t border-b border-stone-200/70">
-          {book.chapters.slice(0, 4).map((ch) => (
+        <div className="space-y-1">
+          {book.chapters.map((ch) => (
             <div
               key={ch.id}
               onClick={() => onOpenReader(book)}
-              className="py-3 flex items-center justify-between cursor-pointer hover:bg-stone-100/60 px-1 transition-colors"
+              className={`py-3 px-3 rounded-xl flex items-center justify-between cursor-pointer transition-all ${
+                isDark
+                  ? 'hover:bg-white/[0.06] active:bg-white/[0.08]'
+                  : 'hover:bg-stone-200/50 active:bg-stone-200/70'
+              }`}
             >
-              <div className="flex items-baseline gap-3">
-                <span className="font-mono text-xs text-stone-400 tabular-nums">
+              <div className="flex items-center gap-3.5">
+                <span className={`font-mono text-xs tabular-nums w-5 ${isDark ? 'text-stone-600' : 'text-stone-400'}`}>
                   0{ch.id}
                 </span>
-                <div>
-                  <h4 className="text-xs font-medium text-stone-900">
-                    {ch.title}
-                  </h4>
-                  <p className="text-[11px] text-stone-500">
-                    {ch.subtitle}
-                  </p>
-                </div>
+                <h4 className={`text-xs font-serif font-medium ${isDark ? 'text-stone-200' : 'text-stone-900'}`}>
+                  {ch.title}
+                </h4>
               </div>
 
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-mono text-stone-400">
+              <div className="flex items-center gap-2.5">
+                <span className={`text-[10px] font-mono tabular-nums ${isDark ? 'text-stone-500' : 'text-stone-400'}`}>
                   {ch.readTime}
                 </span>
                 {ch.isCompleted ? (
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
                 ) : (
-                  <ChevronRight className="w-3.5 h-3.5 text-stone-300" />
+                  <ChevronRight className={`w-3.5 h-3.5 ${isDark ? 'text-stone-700' : 'text-stone-300'}`} />
                 )}
               </div>
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* Author Monograph Card */}
-      <section className="px-5 pt-6">
-        <h3 className="text-xs font-mono uppercase tracking-wider text-stone-400 mb-2.5">
-          About the Author
-        </h3>
-        <div className="bg-white border border-stone-200/80 rounded-xl p-3.5">
-          <h4 className="font-serif text-sm font-semibold text-stone-900">
-            {book.author}
-          </h4>
-          <p className="text-xs text-stone-600 mt-1 leading-relaxed">
-            {book.authorBio}
-          </p>
-          <div className="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between text-[11px] font-mono text-stone-400">
-            <span>Publisher: {book.publisher}</span>
-            <span>Ed. 2026</span>
-          </div>
         </div>
       </section>
     </div>

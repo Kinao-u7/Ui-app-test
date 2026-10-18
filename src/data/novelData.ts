@@ -291,6 +291,137 @@ export const NOVEL_BOOKS: Book[] = [
         timestamp: '2 weeks ago'
       }
     ]
+  },
+  {
+    id: 'the-architecture-of-silence',
+    title: 'The Architecture of Silence',
+    subtitle: 'Monastic spaces and the acoustics of pure stone',
+    author: 'Maya Linnea',
+    authorBio: 'Maya Linnea is a Finnish architectural historian and writer specializing in minimalist spaces.',
+    coverImage: '/src/assets/images/novel_cover_nordic_1791115078241.jpg',
+    genre: 'Nordic Fiction',
+    rating: 4.9,
+    ratingCount: 1530,
+    totalPages: 278,
+    readTime: '5h 45m',
+    publishedYear: 2026,
+    publisher: 'Suomi Folio · Helsinki',
+    progressPercent: 45,
+    currentChapter: 3,
+    audioNarrator: 'Eeva Laakso',
+    audioDuration: '6h 10m',
+    synopsis: 'A deep, lyrical reflection on structural quietude, following an architect who restores an abandoned stone abbey in central Finland. She discovers how deliberate masonry proportions shape human contemplation.',
+    curatorNote: 'A profound exploration of soundlessness and stone geometry.',
+    chapters: [
+      { id: 1, title: 'Vaulted Limestone', subtitle: 'The first acoustic survey', readTime: '16 min', isCompleted: true, isCurrent: false, content: ['Sound behaves differently in limestone than in granite; it lingers like smoke against curved ribbing.'] },
+      { id: 2, title: 'Echoes of the Climax', subtitle: 'Measuring residual resonance', readTime: '20 min', isCompleted: true, isCurrent: false, content: ['A solitary footstep in the cloister takes four seconds to dissipate into dust.'] },
+      { id: 3, title: 'The Silent Arch', subtitle: 'Restoring the northern nave', readTime: '19 min', isCompleted: false, isCurrent: true, content: ['Stone does not remember words, but it remembers weight and stillness.'] }
+    ],
+    savedQuotes: []
+  },
+  {
+    id: 'the-tea-masters-ledger',
+    title: 'The Tea Master’s Ledger',
+    subtitle: 'Wabi-sabi aesthetics and seventeenth-century secrets',
+    author: 'Soseki Endo',
+    authorBio: 'Soseki Endo studies traditional tea aesthetics and classical calligraphy in Uji.',
+    coverImage: '/src/assets/images/novel_cover_botanical_1791115095106.jpg',
+    genre: 'Japanese Modern',
+    rating: 4.8,
+    ratingCount: 1120,
+    totalPages: 320,
+    readTime: '7h 00m',
+    publishedYear: 2025,
+    publisher: 'Kiyomizu Editions · Kyoto',
+    progressPercent: 78,
+    currentChapter: 5,
+    audioNarrator: 'Tatsuya Mori',
+    audioDuration: '7h 40m',
+    synopsis: 'Discovered inside a charcoal brazier in an old tearoom, a handwritten ledger from 1684 describes the exact rituals of seven masters who met during times of political turmoil to converse entirely through tea bowls.',
+    curatorNote: 'Tactile and mesmerizingly calm.',
+    chapters: [
+      { id: 1, title: 'The Sound of Iron Kettle Water', subtitle: 'Wind in the pines', readTime: '14 min', isCompleted: true, isCurrent: false, content: ['In the tea ceremony, the sound of water heating in the釜 resembles wind moving through cedar branches.'] },
+      { id: 2, title: 'Rough Clay and Gold Leaf', subtitle: 'Kintsugi meditations', readTime: '18 min', isCompleted: true, isCurrent: false, content: ['The fracture is not concealed; it is illuminated with lacquer and powdered gold.'] }
+    ],
+    savedQuotes: []
+  },
+  {
+    id: 'pale-blue-geometry',
+    title: 'Pale Blue Geometry',
+    subtitle: 'A neo-noir inquiry into forgotten blueprints',
+    author: 'Julian Vance',
+    authorBio: 'Julian Vance is a speculative fiction writer and former sound designer.',
+    coverImage: '/src/assets/images/novel_cover_cyberpunk_1791115064122.jpg',
+    genre: 'Neo-Noir',
+    rating: 4.7,
+    ratingCount: 890,
+    totalPages: 360,
+    readTime: '7h 50m',
+    publishedYear: 2026,
+    publisher: 'Monolith Press · Berlin',
+    progressPercent: 20,
+    currentChapter: 2,
+    audioNarrator: 'Marcus Holt',
+    audioDuration: '8h 15m',
+    synopsis: 'In an alternate 1980s metropolis where brutalist towers house automated drafting computers, a retired cartographer tracks down the elusive architect of a building that exists on municipal plans but cannot be found on any street.',
+    curatorNote: 'Intriguing, moody, and conceptually sharp.',
+    chapters: [
+      { id: 1, title: 'The Missing Parcel', subtitle: 'Municipal archive sub-basement', readTime: '22 min', isCompleted: true, isCurrent: false, content: ['Every blueprint was inked in indigo on heavy vellum that smelled of ammonia and cold tea.'] },
+      { id: 2, title: 'Vector Grid 09', subtitle: 'Walking the phantom coordinates', readTime: '25 min', isCompleted: false, isCurrent: true, content: ['Where the map showed a twelve-story tower of fluted concrete, there was only a paved vacant lot.'] }
+    ],
+    savedQuotes: []
+  },
+  {
+    id: 'the-paper-cartographer',
+    title: 'The Paper Cartographer',
+    subtitle: 'Fjord maps, compass rose engravings, and lost islands',
+    author: 'Hannele Lind',
+    authorBio: 'Hannele Lind is an essayist and printmaker living in Tromsø.',
+    coverImage: '/src/assets/images/novel_cover_solitude_1791115043477.jpg',
+    genre: 'Nordic Fiction',
+    rating: 4.9,
+    ratingCount: 1670,
+    totalPages: 298,
+    readTime: '6h 20m',
+    publishedYear: 2026,
+    publisher: 'Boreal Print · Tromsø',
+    progressPercent: 55,
+    currentChapter: 3,
+    audioNarrator: 'Signe Berggren',
+    audioDuration: '6h 45m',
+    synopsis: 'A mesmerizing tale of copperplate engraving in the Norwegian arctic, where a family of cartographers dedicated four generations to mapping shifting coastlines and vanishing ice reefs.',
+    curatorNote: 'Delicate sensory prose and cartographic fascination.',
+    chapters: [
+      { id: 1, title: 'Copper and Acid', subtitle: 'The printmaker’s workshop', readTime: '17 min', isCompleted: true, isCurrent: false, content: ['Engraving an arctic fjord into polished copper requires a steady wrist and the patient breath of a diver.'] },
+      { id: 2, title: 'Tidal Drift at Sørøya', subtitle: 'Sounding the shallow waters', readTime: '21 min', isCompleted: true, isCurrent: false, content: ['The lead line splashed into the black sea, its hemp rope knotted every fathom.'] }
+    ],
+    savedQuotes: []
+  },
+  {
+    id: 'the-obsidian-monograph',
+    title: 'The Obsidian Monograph',
+    subtitle: 'Notes on volcanic glass, silence, and memory',
+    author: 'Erik Thorsen',
+    authorBio: 'Erik Thorsen is an Icelandic geologist and philosopher.',
+    coverImage: '/src/assets/images/novel_cover_nordic_1791115078241.jpg',
+    genre: 'Nordic Fiction',
+    rating: 4.8,
+    ratingCount: 1340,
+    totalPages: 312,
+    readTime: '6h 30m',
+    publishedYear: 2025,
+    publisher: 'Reykjavik Folio · Reykjavik',
+    progressPercent: 88,
+    currentChapter: 6,
+    audioNarrator: 'Jon Arnalds',
+    audioDuration: '7h 10m',
+    synopsis: 'Following the 2024 volcanic fissure in Reykjanes, a solitary thinker examines how obsidian mirrors human interiority when polished by volcanic dust and freezing rain.',
+    curatorNote: 'A poetic fusion of earth sciences and introspective philosophy.',
+    chapters: [
+      { id: 1, title: 'Black Glass Plains', subtitle: 'The edge of the cooling flow', readTime: '15 min', isCompleted: true, isCurrent: false, content: ['Obsidian cools so quickly that mineral crystals have no time to form; it is liquid frozen in instantaneous panic.'] },
+      { id: 2, title: 'Vitreous Luster', subtitle: 'Reflections under winter skies', readTime: '18 min', isCompleted: true, isCurrent: false, content: ['Looking into a fractured edge of black basalt is like peering into a pool of black ink that never dries.'] }
+    ],
+    savedQuotes: []
   }
 ];
 

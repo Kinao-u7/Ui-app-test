@@ -145,8 +145,8 @@ export const ScreenSettings: React.FC<ScreenSettingsProps> = ({
     <header
       className={`px-4 pt-3 pb-3 border-b sticky top-0 backdrop-blur-md z-20 flex items-center justify-between ${
         isDark
-          ? 'bg-[#000000]/90 border-neutral-900/60 text-stone-100'
-          : 'bg-[#FAF8F5]/90 border-stone-200/50 text-stone-900'
+          ? 'bg-[#0A0A0A]/90 border-stone-800/50 text-stone-100'
+          : 'bg-[#FFFFFF]/90 border-stone-200/50 text-stone-900'
       }`}
     >
       <div className="flex items-center gap-2.5">
@@ -186,7 +186,7 @@ export const ScreenSettings: React.FC<ScreenSettingsProps> = ({
   return (
     <div
       className={`flex-1 flex flex-col transition-colors duration-200 overflow-y-auto pb-12 ${
-        isDark ? 'bg-[#000000] text-stone-100' : 'bg-[#FAF8F5] text-stone-900'
+        isDark ? 'bg-[#0A0A0A] text-stone-100' : 'bg-[#FFFFFF] text-stone-900'
       }`}
     >
       {/* ========================================================================= */}
@@ -198,8 +198,8 @@ export const ScreenSettings: React.FC<ScreenSettingsProps> = ({
           <header
             className={`px-4 pt-3 pb-3 border-b sticky top-0 backdrop-blur-md z-20 flex items-center justify-between ${
               isDark
-                ? 'bg-[#000000]/90 border-neutral-900/60 text-stone-100'
-                : 'bg-[#FAF8F5]/90 border-stone-200/50 text-stone-900'
+                ? 'bg-[#0A0A0A]/90 border-stone-800/50 text-stone-100'
+                : 'bg-[#FFFFFF]/90 border-stone-200/50 text-stone-900'
             }`}
           >
             <div className="flex items-center gap-2.5">
@@ -252,12 +252,7 @@ export const ScreenSettings: React.FC<ScreenSettingsProps> = ({
                   <span className={`font-mono font-normal text-[13px] tracking-tight block truncate ${
                     isDark ? 'text-stone-100' : 'text-stone-950'
                   }`}>
-                    Appearance & Atmosphere
-                  </span>
-                  <span className={`text-[11px] font-normal block mt-0.5 truncate ${
-                    isDark ? 'text-stone-400' : 'text-stone-500'
-                  }`}>
-                    {isDark ? 'Obsidian OLED' : 'Alabaster Paper'} · Tactile textures
+                    Appearance
                   </span>
                 </div>
               </div>
@@ -435,10 +430,10 @@ export const ScreenSettings: React.FC<ScreenSettingsProps> = ({
                   }`}
                 >
                   <div className="flex items-center justify-between w-full">
-                    <span className={`font-mono text-xs font-normal ${isDark ? 'text-stone-200' : 'text-stone-950'}`}>Alabaster</span>
+                    <span className={`font-mono text-xs font-normal ${isDark ? 'text-stone-200' : 'text-stone-950'}`}>Pure White</span>
                     {!isDark && <Check className="w-3.5 h-3.5 text-stone-900" />}
                   </div>
-                  <span className="text-[10.5px] opacity-70 leading-snug">Daylight tactile linen for daytime reading</span>
+                  <span className="text-[10.5px] opacity-70 leading-snug">Pure white (#FFFFFF) background</span>
                 </button>
 
                 <button
@@ -453,10 +448,10 @@ export const ScreenSettings: React.FC<ScreenSettingsProps> = ({
                   }`}
                 >
                   <div className="flex items-center justify-between w-full">
-                    <span className={`font-mono text-xs font-normal ${isDark ? 'text-stone-100' : 'text-stone-950'}`}>Obsidian</span>
+                    <span className={`font-mono text-xs font-normal ${isDark ? 'text-stone-100' : 'text-stone-950'}`}>Pure Black</span>
                     {isDark && <Check className="w-3.5 h-3.5 text-amber-400" />}
                   </div>
-                  <span className="text-[10.5px] opacity-70 leading-snug">Zero-glare pitch-black night e-ink paper</span>
+                  <span className="text-[10.5px] opacity-70 leading-snug">Pure black (#0A0A0A) dark mode</span>
                 </button>
               </div>
             </div>

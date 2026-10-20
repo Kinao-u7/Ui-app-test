@@ -1,5 +1,5 @@
 import React from 'react';
-import { Library, Compass, ArrowDownToLine, Settings } from 'lucide-react';
+import { Library, Globe, ArrowDownToLine, Settings } from 'lucide-react';
 
 export type NavTab = 'shelf' | 'explore' | 'downloads' | 'settings';
 
@@ -16,7 +16,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
 }) => {
   const tabs = [
     { id: 'shelf' as NavTab, label: 'Library', icon: Library },
-    { id: 'explore' as NavTab, label: 'Discover', icon: Compass },
+    { id: 'explore' as NavTab, label: 'Sources', icon: Globe },
     { id: 'downloads' as NavTab, label: 'Downloads', icon: ArrowDownToLine },
     { id: 'settings' as NavTab, label: 'Settings', icon: Settings },
   ];
@@ -26,8 +26,8 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
       aria-label="Mobile Navigation"
       className={`shrink-0 h-16 w-full border-t transition-colors ${
         isDark
-          ? 'bg-[#000000]/95 border-neutral-900 text-stone-400'
-          : 'bg-[#FAF8F5]/95 border-stone-200/80 text-stone-500'
+          ? 'bg-[#0A0A0A]/95 border-neutral-900 text-stone-400'
+          : 'bg-[#FFFFFF]/95 border-stone-200/80 text-stone-500'
       } backdrop-blur-md grid grid-cols-4 items-center px-4 z-20`}
     >
       {tabs.map((tab) => {

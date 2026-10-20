@@ -355,7 +355,7 @@ export default function App() {
 
   const screensMeta: Array<{ id: ScreenId; title: string; num: number; desc: string }> = [
     { id: 'shelf', title: 'Library', num: 1, desc: 'Web & light novel bookshelf, continue reading hero, WN/LN switcher & updates' },
-    { id: 'explore', title: 'Discover', num: 2, desc: 'Wuxiaworld, Royal Road, Syosetu & NovelUpdates catalogs and sources' },
+    { id: 'explore', title: 'Sources', num: 2, desc: 'WTR-LAB, NovelFire, Wuxiaworld, Royal Road & NovelUpdates sources' },
     { id: 'downloads', title: 'Downloads', num: 3, desc: 'Offline storage vault, cached chapters, and batch chapter downloader' },
     { id: 'settings', title: 'Settings', num: 4, desc: 'Continuous scroll, typography, offline caching & TTS narration hub' },
     { id: 'reader', title: 'Reader Chamber', num: 5, desc: 'Immersive web novel reader with translator notes, themes & chapter jumper' },
@@ -369,16 +369,16 @@ export default function App() {
     <div
       className={`min-h-screen flex flex-col font-sans transition-colors duration-200 ${
         isDarkMode
-          ? 'bg-[#000000] text-stone-100 selection:bg-amber-900 selection:text-amber-100'
-          : 'bg-[#F3EFE9] text-stone-900 selection:bg-stone-300'
+          ? 'bg-[#0A0A0A] text-stone-100 selection:bg-amber-900 selection:text-amber-100'
+          : 'bg-[#F4F4F5] text-stone-900 selection:bg-stone-300'
       }`}
     >
       {/* Top Bar Contract */}
       <header
         className={`h-16 px-6 border-b backdrop-blur-md sticky top-0 z-40 flex items-center justify-between transition-colors ${
           isDarkMode
-            ? 'bg-[#000000]/95 border-neutral-900 text-stone-100'
-            : 'bg-[#FAF8F5]/90 border-stone-300/80 text-stone-900'
+            ? 'bg-[#0A0A0A]/95 border-neutral-900 text-stone-100'
+            : 'bg-[#FFFFFF]/90 border-stone-300/80 text-stone-900'
         }`}
       >
         {/* Zone 1: Wordmark */}
@@ -512,7 +512,7 @@ export default function App() {
             Bottom Nav (4):
           </span>
           <span className="font-mono text-[11px]">
-            Library · Discover · Downloads · Settings
+            Library · Sources · Downloads · Settings
           </span>
         </div>
 
@@ -609,7 +609,7 @@ export default function App() {
                 All Nine Screens of Folio
               </h2>
               <p className={`text-xs mt-2 leading-relaxed ${isDarkMode ? 'text-stone-400' : 'text-stone-600'}`}>
-                Complete minimalist novel reading ecosystem featuring 4-tab mobile bottom navigation (Library, Discover, Downloads, Settings), empty library state, offline vault, and e-ink reader.
+                Complete minimalist novel reading ecosystem featuring 4-tab mobile bottom navigation (Library, Sources, Downloads, Settings), empty library state, offline vault, and e-ink reader.
               </p>
             </div>
 
@@ -651,7 +651,7 @@ export default function App() {
         }`}
       >
         <p>
-          Folio Minimalist Novel Reading Experience · 4-Tab Navigation: Library · Discover · Downloads · Settings
+          Folio Minimalist Novel Reading Experience · 4-Tab Navigation: Library · Sources · Downloads · Settings
         </p>
       </footer>
     </div>

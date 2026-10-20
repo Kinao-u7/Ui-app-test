@@ -158,15 +158,15 @@ export const ScreenSceneStudio: React.FC<ScreenSceneStudioProps> = ({
   return (
     <div
       className={`flex-1 flex flex-col transition-colors duration-200 overflow-y-auto pb-8 ${
-        isDark ? 'bg-[#000000] text-stone-100' : 'bg-[#FAF8F5] text-stone-900'
+        isDark ? 'bg-[#0A0A0A] text-stone-100' : 'bg-[#FFFFFF] text-stone-900'
       }`}
     >
       {/* Top Header */}
       <header
         className={`px-4 py-2 border-b sticky top-0 backdrop-blur-md z-10 flex items-center justify-between ${
           isDark
-            ? 'bg-[#000000]/90 border-neutral-900 text-stone-100'
-            : 'bg-[#FAF8F5]/90 border-stone-200/70 text-stone-900'
+            ? 'bg-[#0A0A0A]/90 border-neutral-900 text-stone-100'
+            : 'bg-[#FFFFFF]/90 border-stone-200/70 text-stone-900'
         }`}
       >
         <button

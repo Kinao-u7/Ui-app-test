@@ -3,27 +3,19 @@ import {
   Search,
   Plus,
   Globe,
-  Rss,
   Layers,
-  Database,
   Check,
   X,
   Trash2,
   ExternalLink,
-  Sun,
-  Moon,
   ChevronRight,
   CheckCircle2,
   Star,
-  Compass,
-  ArrowLeft,
-  ArrowRight,
-  RotateCcw,
   Bookmark
 } from 'lucide-react';
 import { Book } from '../data/novelData';
 
-export type SourceType = 'opds' | 'scraper' | 'rss' | 'api';
+export type SourceType = 'scraper' | 'api' | 'web';
 
 export interface NovelSource {
   id: string;
@@ -42,10 +34,38 @@ export interface NovelSource {
 
 const DEFAULT_SOURCES: NovelSource[] = [
   {
+    id: 'src-wtr-lab',
+    name: 'WTR-LAB',
+    url: 'https://wtr-lab.com',
+    type: 'scraper',
+    description: 'Machine & community translated web novel archive',
+    availableCount: '15,000+ Novels',
+    isEnabled: true,
+    isFavorite: true,
+    isCustom: false,
+    lastSynced: '5m ago',
+    status: 'active',
+    pingMs: 24
+  },
+  {
+    id: 'src-novelfire',
+    name: 'NovelFire',
+    url: 'https://novelfire.com',
+    type: 'scraper',
+    description: 'Popular translated progression and fantasy novels',
+    availableCount: '8,500+ Novels',
+    isEnabled: true,
+    isFavorite: true,
+    isCustom: false,
+    lastSynced: '12m ago',
+    status: 'active',
+    pingMs: 32
+  },
+  {
     id: 'src-wuxiaworld',
-    name: 'WuxiaWorld Web Feed',
-    url: 'https://www.wuxiaworld.com/feed/chapters.xml',
-    type: 'rss',
+    name: 'WuxiaWorld',
+    url: 'https://wuxiaworld.com',
+    type: 'scraper',
     description: 'Premier portal for translated Chinese Xianxia, Wuxia, and cultivation web novels',
     availableCount: '3,800+ Serials',
     isEnabled: true,
@@ -57,9 +77,9 @@ const DEFAULT_SOURCES: NovelSource[] = [
   },
   {
     id: 'src-royal-road',
-    name: 'Royal Road Web Serials',
-    url: 'https://www.royalroad.com/syndication/novels.xml',
-    type: 'rss',
+    name: 'Royal Road',
+    url: 'https://royalroad.com',
+    type: 'scraper',
     description: 'Ongoing serialized progression fantasy, LitRPG, and hard-magic web serials',
     availableCount: '45,000+ Serials',
     isEnabled: true,
@@ -71,8 +91,8 @@ const DEFAULT_SOURCES: NovelSource[] = [
   },
   {
     id: 'src-nu-crawler',
-    name: 'NovelUpdates Index Extension',
-    url: 'https://extensions.novelreader.app/repos/nu-v2.json',
+    name: 'NovelUpdates',
+    url: 'https://novelupdates.com',
     type: 'scraper',
     description: 'Comprehensive directory of translated Asian web novels and release trackers',
     availableCount: '25,000+ Novels',
@@ -85,37 +105,23 @@ const DEFAULT_SOURCES: NovelSource[] = [
   },
   {
     id: 'src-syosetu',
-    name: 'Syosetu (Shousetsuka ni Narou)',
-    url: 'https://yomou.syosetu.com/rank/list/type/weekly/',
+    name: 'Syosetu',
+    url: 'https://syosetu.com',
     type: 'scraper',
     description: 'The world largest Japanese web novel and light novel serialized ecosystem',
     availableCount: '100,000+ Works',
     isEnabled: true,
-    isFavorite: true,
+    isFavorite: false,
     isCustom: false,
     lastSynced: '1h ago',
     status: 'active',
     pingMs: 64
   },
   {
-    id: 'src-baka-tsuki',
-    name: 'Baka-Tsuki Light Novel Archive',
-    url: 'https://www.baka-tsuki.org/project/index.php?title=Main_Page',
-    type: 'scraper',
-    description: 'Community-translated Japanese light novels with volume illustrations',
-    availableCount: '1,200+ Series',
-    isEnabled: true,
-    isFavorite: false,
-    isCustom: false,
-    lastSynced: '3h ago',
-    status: 'active',
-    pingMs: 72
-  },
-  {
     id: 'src-scribblehub',
-    name: 'ScribbleHub Progression Index',
-    url: 'https://www.scribblehub.com/rssfeed.php?type=all',
-    type: 'rss',
+    name: 'ScribbleHub',
+    url: 'https://scribblehub.com',
+    type: 'scraper',
     description: 'Indie serialized fiction, LitRPG, dungeon crawls, and original web novels',
     availableCount: '14,000+ Novels',
     isEnabled: true,
@@ -126,88 +132,47 @@ const DEFAULT_SOURCES: NovelSource[] = [
     pingMs: 48
   },
   {
-    id: 'src-standard-ebooks',
-    name: 'Standard Ebooks OPDS',
-    url: 'https://standardebooks.org/opds/all',
-    type: 'opds',
-    description: 'Carefully formatted public domain novels and literary masterworks',
-    availableCount: '1,420+ Editions',
+    id: 'src-lightnovelpub',
+    name: 'LightNovelPub',
+    url: 'https://lightnovelpub.com',
+    type: 'scraper',
+    description: 'Archive of serialized light novels and eastern fantasy',
+    availableCount: '6,200+ Books',
     isEnabled: true,
     isFavorite: false,
     isCustom: false,
     lastSynced: '2h ago',
     status: 'active',
-    pingMs: 38
-  },
-  {
-    id: 'src-project-gutenberg',
-    name: 'Project Gutenberg Archive',
-    url: 'https://www.gutenberg.org/ebooks.opds/',
-    type: 'opds',
-    description: 'Free classic literature, translated novels, and foundational texts',
-    availableCount: '70,000+ Works',
-    isEnabled: true,
-    isFavorite: false,
-    isCustom: false,
-    lastSynced: '1d ago',
-    status: 'active',
-    pingMs: 52
-  },
-  {
-    id: 'src-calibre',
-    name: 'Calibre Content Server',
-    url: 'http://192.168.1.100:8080/opds',
-    type: 'opds',
-    description: 'Personal self-hosted Calibre library catalog',
-    availableCount: 'Local Server',
-    isEnabled: true,
-    isFavorite: false,
-    isCustom: false,
-    lastSynced: '3h ago',
-    status: 'active',
-    pingMs: 15
-  }
-];
-
-const PRESET_SOURCES = [
-  {
-    name: 'Feedbooks Public Domain',
-    url: 'https://catalog.feedbooks.com/publicdomain/browse.atom',
-    type: 'opds' as SourceType,
-    description: 'High-quality public domain novels with custom typography',
-    availableCount: '4,200+ Books'
-  },
-  {
-    name: 'WuxiaWorld Web Feed',
-    url: 'https://www.wuxiaworld.com/feed/chapters.xml',
-    type: 'rss' as SourceType,
-    description: 'Cultivation and martial arts translated web serials',
-    availableCount: '3,800+ Serials'
-  },
-  {
-    name: 'Calibre Content Server',
-    url: 'http://192.168.1.100:8080/opds',
-    type: 'opds' as SourceType,
-    description: 'Personal self-hosted Calibre library catalog',
-    availableCount: 'Local Server'
-  },
-  {
-    name: 'ScribbleHub Progression Index',
-    url: 'https://www.scribblehub.com/rssfeed.php?type=all',
-    type: 'rss' as SourceType,
-    description: 'Indie serialized fiction and original web novels',
-    availableCount: '12,000+ Novels'
+    pingMs: 42
   }
 ];
 
 const BROWSER_BOOKMARKS = [
-  { name: 'Royal Road Serials', url: 'https://www.royalroad.com', type: 'rss' as SourceType },
-  { name: 'Standard Ebooks', url: 'https://standardebooks.org/opds/all', type: 'opds' as SourceType },
-  { name: 'Project Gutenberg', url: 'https://www.gutenberg.org/ebooks.opds/', type: 'opds' as SourceType },
-  { name: 'NovelUpdates Index', url: 'https://www.novelupdates.com', type: 'scraper' as SourceType },
-  { name: 'WuxiaWorld Community', url: 'https://www.wuxiaworld.com', type: 'rss' as SourceType },
-  { name: 'Open Library Catalog', url: 'https://openlibrary.org/catalog/opds', type: 'opds' as SourceType },
+  { name: 'WTR-LAB', url: 'https://wtr-lab.com' },
+  { name: 'NovelFire', url: 'https://novelfire.com' },
+  { name: 'Royal Road', url: 'https://royalroad.com' },
+  { name: 'WuxiaWorld', url: 'https://wuxiaworld.com' },
+  { name: 'NovelUpdates', url: 'https://novelupdates.com' },
+  { name: 'ScribbleHub', url: 'https://scribblehub.com' },
 ];
+
+// Helper to format clean domain with capitalized prefix: e.g. Wtr-lab.com, Novelfire.com
+export const formatDisplayDomain = (url: string): string => {
+  try {
+    const withoutProtocol = url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '');
+    const host = withoutProtocol.split('/')[0].split('?')[0].split('#')[0];
+    if (!host) return url;
+    const dotIndex = host.lastIndexOf('.');
+    if (dotIndex > 0) {
+      const name = host.slice(0, dotIndex);
+      const tld = host.slice(dotIndex + 1);
+      return `${name.charAt(0).toUpperCase() + name.slice(1)}.${tld}`;
+    }
+    return host;
+  } catch {
+    return url;
+  }
+};
 
 interface ScreenExploreProps {
   onSelectBook?: (book: Book) => void;
@@ -220,13 +185,12 @@ interface ScreenExploreProps {
 
 export const ScreenExplore: React.FC<ScreenExploreProps> = ({
   isDark = false,
-  onToggleDarkMode
 }) => {
-  // Load sources from localStorage with fallback to 9 default sources
+  // Load sources from localStorage with fallback to default sources
   const [sources, setSources] = useState<NovelSource[]>(() => {
     if (typeof window !== 'undefined') {
       try {
-        const saved = localStorage.getItem('folio_novel_sources_v4');
+        const saved = localStorage.getItem('folio_novel_sources_v5');
         if (saved) {
           const parsed = JSON.parse(saved);
           if (Array.isArray(parsed) && parsed.length > 0) {
@@ -241,7 +205,7 @@ export const ScreenExplore: React.FC<ScreenExploreProps> = ({
   });
 
   useEffect(() => {
-    localStorage.setItem('folio_novel_sources_v4', JSON.stringify(sources));
+    localStorage.setItem('folio_novel_sources_v5', JSON.stringify(sources));
   }, [sources]);
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -250,14 +214,12 @@ export const ScreenExplore: React.FC<ScreenExploreProps> = ({
   const [isBrowserOpen, setIsBrowserOpen] = useState(false);
 
   // In-app browser state
-  const [browserUrl, setBrowserUrl] = useState('https://www.royalroad.com');
-  const [browserInput, setBrowserInput] = useState('https://www.royalroad.com');
+  const [browserUrl, setBrowserUrl] = useState('https://wtr-lab.com');
+  const [browserInput, setBrowserInput] = useState('https://wtr-lab.com');
 
-  // New source form state
-  const [newName, setNewName] = useState('');
+  // Simple new source link form state
   const [newUrl, setNewUrl] = useState('');
-  const [newType, setNewType] = useState<SourceType>('opds');
-  const [newDescription, setNewDescription] = useState('');
+  const [newName, setNewName] = useState('');
   const [formError, setFormError] = useState('');
 
   // Toast notification
@@ -265,7 +227,7 @@ export const ScreenExplore: React.FC<ScreenExploreProps> = ({
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3000);
+    setTimeout(() => setToastMessage(null), 2500);
   };
 
   const handleToggleFavorite = (id: string) => {
@@ -288,68 +250,66 @@ export const ScreenExplore: React.FC<ScreenExploreProps> = ({
 
   const handleAddCustomSource = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newName.trim()) {
-      setFormError('Please enter a source name');
-      return;
-    }
-    if (!newUrl.trim() || !newUrl.includes('.')) {
-      setFormError('Please enter a valid URL or host endpoint');
+    const cleanUrl = newUrl.trim();
+    if (!cleanUrl || !cleanUrl.includes('.')) {
+      setFormError('Please enter a valid website link (e.g. wtr-lab.com)');
       return;
     }
 
+    const domain = formatDisplayDomain(cleanUrl);
+    const domainNameOnly = domain.split('.')[0] || 'Novel Source';
+    const finalName = newName.trim() || domainNameOnly;
+
     const newSource: NovelSource = {
       id: `custom-src-${Date.now()}`,
-      name: newName.trim(),
-      url: newUrl.trim().startsWith('http') ? newUrl.trim() : `https://${newUrl.trim()}`,
-      type: newType,
-      description: newDescription.trim() || 'Custom added novel repository source',
-      availableCount: 'Custom Index',
+      name: finalName,
+      url: cleanUrl.startsWith('http') ? cleanUrl : `https://${cleanUrl}`,
+      type: 'scraper',
+      description: 'Web novel archive source',
+      availableCount: 'Online Index',
       isEnabled: true,
       isFavorite: true,
       isCustom: true,
       lastSynced: 'Just now',
       status: 'active',
-      pingMs: Math.floor(30 + Math.random() * 35)
+      pingMs: Math.floor(25 + Math.random() * 30)
     };
 
-    setSources(prev => [newSource, ...prev]);
+    setSources(prev => [...prev, newSource]);
     setIsAddModalOpen(false);
-    setNewName('');
     setNewUrl('');
-    setNewDescription('');
+    setNewName('');
     setFormError('');
     showToast(`Source "${newSource.name}" added successfully!`);
   };
 
-  const handleApplyPreset = (preset: typeof PRESET_SOURCES[0]) => {
-    setNewName(preset.name);
-    setNewUrl(preset.url);
-    setNewType(preset.type);
-    setNewDescription(preset.description);
-    setFormError('');
-  };
-
   const handleRestoreDefaults = () => {
     setSources(DEFAULT_SOURCES);
-    showToast('Default 9 sources restored');
+    showToast('Default novel sources restored');
   };
 
   const handleAddCurrentBrowserAsSource = () => {
-    try {
-      const parsed = new URL(browserUrl);
-      const hostname = parsed.hostname.replace('www.', '');
-      setNewName(hostname.charAt(0).toUpperCase() + hostname.slice(1).split('.')[0] + ' Feed');
-      setNewUrl(browserUrl);
-      setNewType(browserUrl.includes('opds') ? 'opds' : browserUrl.includes('rss') ? 'rss' : 'scraper');
-      setFormError('');
-      setIsBrowserOpen(false);
-      setIsAddModalOpen(true);
-    } catch {
-      setNewName('Web Source');
-      setNewUrl(browserUrl);
-      setIsBrowserOpen(false);
-      setIsAddModalOpen(true);
-    }
+    const domain = formatDisplayDomain(browserUrl);
+    const domainNameOnly = domain.split('.')[0] || 'Novel Source';
+
+    const newSource: NovelSource = {
+      id: `custom-src-${Date.now()}`,
+      name: domainNameOnly,
+      url: browserUrl,
+      type: 'scraper',
+      description: 'Web novel source from browser',
+      availableCount: 'Online Index',
+      isEnabled: true,
+      isFavorite: true,
+      isCustom: true,
+      lastSynced: 'Just now',
+      status: 'active',
+      pingMs: Math.floor(20 + Math.random() * 25)
+    };
+
+    setSources(prev => [...prev, newSource]);
+    setIsBrowserOpen(false);
+    showToast(`Connected "${newSource.name}" to Sources!`);
   };
 
   // Filter sources by search query
@@ -361,23 +321,10 @@ export const ScreenExplore: React.FC<ScreenExploreProps> = ({
     );
   });
 
-  const getTypeIcon = (type: SourceType) => {
-    switch (type) {
-      case 'opds':
-        return Database;
-      case 'scraper':
-        return Globe;
-      case 'rss':
-        return Rss;
-      case 'api':
-        return Layers;
-    }
-  };
-
   return (
     <div
       className={`flex-1 flex flex-col transition-colors duration-200 h-full relative overflow-hidden ${
-        isDark ? 'bg-[#000000] text-stone-100' : 'bg-[#FAF8F5] text-stone-900'
+        isDark ? 'bg-[#0A0A0A] text-stone-100' : 'bg-[#FFFFFF] text-stone-900'
       }`}
     >
       {/* Toast Alert */}
@@ -390,98 +337,52 @@ export const ScreenExplore: React.FC<ScreenExploreProps> = ({
 
       {/* Scrollable Container */}
       <div className="flex-1 overflow-y-auto pb-8">
-        {/* Header Bar: Discover as main heading, Sources · {count} Sources */}
+        {/* Header Bar: Sources as main heading */}
         <header
-          className={`px-4 pt-3 pb-3 border-b sticky top-0 backdrop-blur-md z-20 flex items-center justify-between ${
+          className={`px-4 pt-3.5 pb-3 border-b sticky top-0 backdrop-blur-md z-20 flex items-center justify-between ${
             isDark
-              ? 'bg-[#000000]/90 border-neutral-900 text-stone-100'
-              : 'bg-[#FAF8F5]/90 border-stone-200/70 text-stone-900'
+              ? 'bg-[#0A0A0A]/90 border-neutral-900 text-stone-100'
+              : 'bg-[#FFFFFF]/90 border-stone-200/70 text-stone-900'
           }`}
         >
           <div>
-            <span
-              className={`text-[10px] uppercase font-mono tracking-widest block ${
-                isDark ? 'text-amber-400' : 'text-stone-400'
-              }`}
-            >
-              Sources · {sources.length} Sources
-            </span>
             <h1 className="text-xl font-serif font-semibold tracking-tight">
-              Discover
+              Sources
             </h1>
           </div>
 
-          <div className="flex items-center gap-1.5">
-            {/* Top Browser Button */}
-            <button
-              type="button"
-              onClick={() => setIsBrowserOpen(true)}
-              aria-label="Novel Web Browser"
-              title="Open Novel Browser"
-              className={`min-h-[34px] px-2.5 flex items-center gap-1.5 rounded-lg border transition-all shadow-2xs cursor-pointer ${
-                isBrowserOpen
-                  ? isDark
-                    ? 'border-amber-400 bg-amber-950/30 text-amber-400'
-                    : 'border-amber-600 bg-amber-50 text-amber-900'
-                  : isDark
-                  ? 'border-stone-800 bg-stone-900/80 text-stone-300 hover:border-stone-700 hover:text-stone-100'
-                  : 'border-stone-300/80 bg-white/80 text-stone-700 hover:border-stone-400 hover:text-stone-900'
-              }`}
-            >
-              <Compass className="w-3.5 h-3.5 text-amber-500" />
-              <span className="text-xs font-medium">Browser</span>
-            </button>
-
-            {/* Search Sources Button */}
+          {/* Top Right: Browser icon with Search button next to it, merging with background without square outlines */}
+          <div className="flex items-center gap-0.5">
             <button
               type="button"
               onClick={() => setIsSearchOpen(!isSearchOpen)}
               aria-label="Search Sources"
               title="Search Sources"
-              className={`min-h-[34px] min-w-[34px] flex items-center justify-center rounded-lg border transition-all shadow-2xs cursor-pointer ${
+              className={`p-2 rounded-full transition-colors cursor-pointer ${
                 isSearchOpen
                   ? isDark
-                    ? 'border-amber-400 bg-amber-950/30 text-amber-400'
-                    : 'border-amber-600 bg-amber-50 text-amber-900'
+                    ? 'text-amber-400 bg-white/10'
+                    : 'text-stone-900 bg-stone-900/10'
                   : isDark
-                  ? 'border-stone-800 bg-stone-900/80 text-stone-300 hover:border-stone-700 hover:text-stone-100'
-                  : 'border-stone-300/80 bg-white/80 text-stone-700 hover:border-stone-400 hover:text-stone-900'
+                  ? 'text-stone-300 hover:text-white hover:bg-white/5 active:bg-white/10'
+                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-900/5 active:bg-stone-900/10'
               }`}
             >
-              <Search className="w-3.5 h-3.5" />
+              <Search className="w-5 h-5 stroke-[1.9]" />
             </button>
 
-            {/* Dark Mode Switcher */}
-            {onToggleDarkMode && (
-              <button
-                type="button"
-                onClick={onToggleDarkMode}
-                aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-                className={`min-h-[34px] min-w-[34px] flex items-center justify-center rounded-lg border transition-all shadow-2xs cursor-pointer ${
-                  isDark
-                    ? 'border-stone-800 bg-stone-900/80 text-amber-400 hover:border-stone-700'
-                    : 'border-stone-300/80 bg-white/80 text-stone-700 hover:border-stone-400'
-                }`}
-              >
-                {isDark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
-              </button>
-            )}
-
-            {/* Quick Add Button */}
             <button
               type="button"
-              onClick={() => {
-                setFormError('');
-                setIsAddModalOpen(true);
-              }}
-              className={`min-h-[34px] px-3 text-xs font-semibold rounded-lg shadow-xs flex items-center gap-1.5 transition-transform active:scale-95 cursor-pointer ${
+              onClick={() => setIsBrowserOpen(true)}
+              aria-label="Open Browser"
+              title="Open Browser"
+              className={`p-2 rounded-full transition-colors cursor-pointer ${
                 isDark
-                  ? 'bg-amber-400 text-stone-950 hover:bg-amber-300'
-                  : 'bg-stone-900 text-stone-50 hover:bg-stone-800'
+                  ? 'text-stone-300 hover:text-white hover:bg-white/5 active:bg-white/10'
+                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-900/5 active:bg-stone-900/10'
               }`}
             >
-              <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-              <span>Add</span>
+              <Globe className="w-5 h-5 stroke-[1.9]" />
             </button>
           </div>
         </header>
@@ -517,15 +418,114 @@ export const ScreenExplore: React.FC<ScreenExploreProps> = ({
           </div>
         )}
 
-        {/* Sources List Section: Smaller items with only name, picture, and link under the name */}
+        {/* Sources List Section */}
         <section className="px-4 pt-3 space-y-2">
-          {/* Option in the same style as added sources: "Add Custom Source" */}
+          {/* Configured Sources Items */}
+          {filteredSources.map((source) => {
+            const displayDomain = formatDisplayDomain(source.url);
+            return (
+              <div
+                key={source.id}
+                className={`border rounded-2xl p-3 flex items-center justify-between transition-all shadow-2xs group ${
+                  isDark
+                    ? 'bg-[#121214] border-stone-800/80 hover:border-stone-700'
+                    : 'bg-white border-stone-200/90 hover:border-stone-300'
+                }`}
+              >
+                {/* Icon, Name, and Domain under site name with small browser icon */}
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <div
+                    className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border ${
+                      source.isFavorite
+                        ? isDark
+                          ? 'bg-amber-400/10 border-amber-400/40 text-amber-400'
+                          : 'bg-amber-100/80 border-amber-300 text-amber-800'
+                        : isDark
+                        ? 'bg-stone-900 border-stone-800 text-stone-400'
+                        : 'bg-stone-100 border-stone-200 text-stone-500'
+                    }`}
+                  >
+                    <Globe className="w-4 h-4 stroke-[1.8]" />
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5">
+                      <h3
+                        className={`font-serif text-xs font-semibold truncate ${
+                          isDark ? 'text-stone-100' : 'text-stone-950'
+                        }`}
+                      >
+                        {source.name}
+                      </h3>
+                      {source.isCustom && (
+                        <span className="text-[8.5px] font-mono px-1 py-0.2 rounded border bg-purple-500/10 text-purple-400 border-purple-500/30">
+                          Custom
+                        </span>
+                      )}
+                    </div>
+
+                    {/* URL under site name formatted as Wtr-lab.com with small browser icon */}
+                    <div className="flex items-center gap-1.5 text-[10px] font-mono opacity-65 truncate mt-0.5">
+                      <Globe className="w-2.5 h-2.5 shrink-0 opacity-80" />
+                      <span className="truncate">{displayDomain}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right controls: Delete (if custom) and Smaller Favorite Star Button */}
+                <div className="flex items-center gap-1 shrink-0 ml-2">
+                  {source.isCustom && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteSource(source.id, source.name);
+                      }}
+                      className="p-1.5 text-stone-400 hover:text-rose-500 transition-colors cursor-pointer rounded-lg hover:bg-rose-500/10"
+                      title="Delete Custom Source"
+                      aria-label={`Delete ${source.name}`}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+
+                  {/* Favorite Star Button - smaller bit */}
+                  <button
+                    type="button"
+                    aria-label={source.isFavorite ? `Unfavorite ${source.name}` : `Favorite ${source.name}`}
+                    title={source.isFavorite ? 'Favorited Source' : 'Favorite Source'}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleToggleFavorite(source.id);
+                    }}
+                    className={`min-h-[30px] min-w-[30px] flex items-center justify-center rounded-lg transition-transform active:scale-90 cursor-pointer ${
+                      source.isFavorite
+                        ? 'text-amber-400 hover:text-amber-300'
+                        : isDark
+                        ? 'text-stone-600 hover:text-stone-300'
+                        : 'text-stone-300 hover:text-stone-600'
+                    }`}
+                  >
+                    <Star
+                      className={`w-3.5 h-3.5 transition-all ${
+                        source.isFavorite
+                          ? 'fill-amber-400 text-amber-400 drop-shadow-xs'
+                          : 'stroke-[1.75]'
+                      }`}
+                    />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Add a source moved to the BOTTOM with secondary text "paste any link to access novels" */}
           <div
             onClick={() => {
               setFormError('');
               setIsAddModalOpen(true);
             }}
-            className={`border rounded-2xl p-3 flex items-center justify-between cursor-pointer transition-all shadow-2xs group ${
+            className={`border rounded-2xl p-3 flex items-center justify-between cursor-pointer transition-all shadow-2xs group mt-3 ${
               isDark
                 ? 'bg-[#121214] border-stone-800/80 hover:border-amber-400/60 hover:bg-stone-900/60'
                 : 'bg-white border-stone-200/90 hover:border-stone-400 hover:bg-stone-50/60'
@@ -548,10 +548,10 @@ export const ScreenExplore: React.FC<ScreenExploreProps> = ({
                     isDark ? 'text-amber-400 group-hover:text-amber-300' : 'text-stone-950 group-hover:text-amber-900'
                   }`}
                 >
-                  Add Custom Source
+                  Add a Source
                 </h3>
-                <p className="text-[10px] font-mono opacity-60 truncate mt-0.5">
-                  Connect custom OPDS, RSS, or web repository
+                <p className="text-[10.5px] opacity-60 truncate mt-0.5">
+                  Paste any link to access novels
                 </p>
               </div>
             </div>
@@ -560,102 +560,6 @@ export const ScreenExplore: React.FC<ScreenExploreProps> = ({
               <ChevronRight className="w-4 h-4 opacity-40 group-hover:opacity-100 transition-opacity" />
             </div>
           </div>
-
-          {/* Configured Sources Items: Smaller, only name, picture, and link under name, with Favorite Star Button */}
-          {filteredSources.map((source) => {
-            const IconComponent = getTypeIcon(source.type);
-            return (
-              <div
-                key={source.id}
-                className={`border rounded-2xl p-3 flex items-center justify-between transition-all shadow-2xs group ${
-                  isDark
-                    ? 'bg-[#121214] border-stone-800/80 hover:border-stone-700'
-                    : 'bg-white border-stone-200/90 hover:border-stone-300'
-                }`}
-              >
-                {/* Picture, Name, Link */}
-                <div className="flex items-center gap-3 min-w-0 flex-1">
-                  <div
-                    className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border ${
-                      source.isFavorite
-                        ? isDark
-                          ? 'bg-amber-400/10 border-amber-400/40 text-amber-400'
-                          : 'bg-amber-100/80 border-amber-300 text-amber-800'
-                        : isDark
-                        ? 'bg-stone-900 border-stone-800 text-stone-400'
-                        : 'bg-stone-100 border-stone-200 text-stone-500'
-                    }`}
-                  >
-                    <IconComponent className="w-4 h-4 stroke-[1.8]" />
-                  </div>
-
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5">
-                      <h3
-                        className={`font-serif text-xs font-semibold truncate ${
-                          isDark ? 'text-stone-100' : 'text-stone-950'
-                        }`}
-                      >
-                        {source.name}
-                      </h3>
-                      {source.isCustom && (
-                        <span className="text-[8.5px] font-mono px-1 py-0.2 rounded border bg-purple-500/10 text-purple-400 border-purple-500/30">
-                          Custom
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-[10px] font-mono opacity-60 truncate mt-0.5">
-                      {source.url}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Right controls: Delete (if custom) and Favorite Star Button */}
-                <div className="flex items-center gap-1 shrink-0 ml-2">
-                  {source.isCustom && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteSource(source.id, source.name);
-                      }}
-                      className="p-1.5 text-stone-400 hover:text-rose-500 transition-colors cursor-pointer rounded-lg hover:bg-rose-500/10"
-                      title="Delete Custom Source"
-                      aria-label={`Delete ${source.name}`}
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-
-                  {/* Favorite Star Button (Replaces on/off switch) */}
-                  <button
-                    type="button"
-                    aria-label={source.isFavorite ? `Unfavorite ${source.name}` : `Favorite ${source.name}`}
-                    title={source.isFavorite ? 'Favorited Source' : 'Favorite Source'}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleToggleFavorite(source.id);
-                    }}
-                    className={`min-h-[34px] min-w-[34px] flex items-center justify-center rounded-lg transition-transform active:scale-90 cursor-pointer ${
-                      source.isFavorite
-                        ? 'text-amber-400 hover:text-amber-300'
-                        : isDark
-                        ? 'text-stone-600 hover:text-stone-300'
-                        : 'text-stone-300 hover:text-stone-600'
-                    }`}
-                  >
-                    <Star
-                      className={`w-4 h-4 transition-all ${
-                        source.isFavorite
-                          ? 'fill-amber-400 text-amber-400 scale-110 drop-shadow-xs'
-                          : 'stroke-[1.75]'
-                      }`}
-                    />
-                  </button>
-                </div>
-              </div>
-            );
-          })}
         </section>
 
         {/* Global Reset Footer */}
@@ -665,14 +569,14 @@ export const ScreenExplore: React.FC<ScreenExploreProps> = ({
             onClick={handleRestoreDefaults}
             className="text-[11px] font-mono text-stone-500 hover:text-amber-500 hover:underline cursor-pointer"
           >
-            Restore 9 Sample Sources
+            Restore Default Sources
           </button>
         </section>
       </div>
 
-      {/* Top Browser Sheet / In-App Novel Browser */}
+      {/* In-App Novel Browser */}
       {isBrowserOpen && (
-        <div className="absolute inset-0 z-50 flex flex-col bg-[#FAF8F5] dark:bg-[#000000] animate-in slide-in-from-bottom duration-300">
+        <div className="absolute inset-0 z-50 flex flex-col bg-[#FFFFFF] dark:bg-[#0A0A0A] animate-in slide-in-from-bottom duration-300">
           {/* Browser Navigation Bar */}
           <div
             className={`px-3 py-2.5 border-b flex items-center gap-2 ${
@@ -700,7 +604,7 @@ export const ScreenExplore: React.FC<ScreenExploreProps> = ({
                     setBrowserUrl(browserInput.startsWith('http') ? browserInput : `https://${browserInput}`);
                   }
                 }}
-                placeholder="Enter novel feed or catalog URL..."
+                placeholder="Enter novel feed or website URL..."
                 className="w-full bg-transparent focus:outline-none truncate text-[11px]"
               />
             </div>
@@ -801,7 +705,7 @@ export const ScreenExplore: React.FC<ScreenExploreProps> = ({
         </div>
       )}
 
-      {/* Pull Up Sheet / Modal to Add Custom Source */}
+      {/* Clean Link Add Modal (OPDS & RSS sheet removed) */}
       {isAddModalOpen && (
         <div className="absolute inset-0 z-50 flex flex-col justify-end">
           {/* Backdrop */}
@@ -811,9 +715,9 @@ export const ScreenExplore: React.FC<ScreenExploreProps> = ({
             aria-label="Close modal"
           />
 
-          {/* Sheet Panel */}
+          {/* Modal Panel */}
           <div
-            className={`relative z-10 w-full rounded-t-3xl border-t p-5 pb-6 shadow-2xl max-h-[90%] overflow-y-auto transition-transform animate-in slide-in-from-bottom duration-300 ${
+            className={`relative z-10 w-full rounded-t-3xl border-t p-5 pb-6 shadow-2xl transition-transform animate-in slide-in-from-bottom duration-300 ${
               isDark ? 'bg-[#121214] border-stone-800 text-stone-100' : 'bg-white border-stone-200 text-stone-900'
             }`}
           >
@@ -823,14 +727,11 @@ export const ScreenExplore: React.FC<ScreenExploreProps> = ({
             {/* Header */}
             <div className="flex items-start justify-between mb-4 pb-3 border-b border-stone-200/50 dark:border-stone-800">
               <div>
-                <span className={`text-[10px] font-mono uppercase tracking-widest block mb-0.5 ${isDark ? 'text-amber-400' : 'text-stone-400'}`}>
-                  Repository Endpoint
-                </span>
                 <h3 className="text-base font-serif font-semibold tracking-tight">
-                  Add Custom Source
+                  Add a Source
                 </h3>
-                <p className={`text-[11px] font-sans mt-0.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
-                  Connect any OPDS catalog, web novel scraper, or serial chapter feed
+                <p className={`text-xs mt-0.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                  Paste any link to access novels
                 </p>
               </div>
 
@@ -846,31 +747,7 @@ export const ScreenExplore: React.FC<ScreenExploreProps> = ({
               </button>
             </div>
 
-            {/* Quick 1-Click Presets */}
-            <div className="mb-4">
-              <span className={`text-[10px] font-mono uppercase tracking-wider block mb-2 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
-                Quick Presets (Click to autofill)
-              </span>
-              <div className="grid grid-cols-2 gap-1.5">
-                {PRESET_SOURCES.map((preset) => (
-                  <button
-                    key={preset.name}
-                    type="button"
-                    onClick={() => handleApplyPreset(preset)}
-                    className={`p-2 rounded-xl border text-left transition-colors cursor-pointer ${
-                      isDark
-                        ? 'border-stone-800/80 bg-stone-900/40 hover:bg-stone-800 hover:border-amber-400/60 text-stone-200'
-                        : 'border-stone-200/80 bg-stone-50 hover:bg-stone-100 hover:border-stone-400 text-stone-800'
-                    }`}
-                  >
-                    <div className="font-serif text-[11px] font-medium truncate">{preset.name}</div>
-                    <div className="text-[9.5px] font-mono opacity-60 truncate mt-0.5">{preset.type.toUpperCase()} · {preset.availableCount}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Form */}
+            {/* Form to paste link */}
             <form onSubmit={handleAddCustomSource} className="space-y-3.5">
               {formError && (
                 <div className="p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-500 text-xs font-mono">
@@ -878,94 +755,36 @@ export const ScreenExplore: React.FC<ScreenExploreProps> = ({
                 </div>
               )}
 
-              {/* Source Name */}
-              <div>
-                <label className="block text-xs font-serif font-medium mb-1">
-                  Source Name <span className="text-amber-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  placeholder="e.g. My Calibre OPDS, Standard Ebooks, WuxiaHub"
-                  className={`w-full text-xs rounded-xl px-3 py-2 outline-none border transition-colors ${
-                    isDark
-                      ? 'bg-stone-900 border-stone-800 text-stone-100 focus:border-amber-400'
-                      : 'bg-stone-100/70 border-stone-300 text-stone-900 focus:border-stone-800'
-                  }`}
-                  required
-                />
-              </div>
-
               {/* Source URL */}
               <div>
                 <label className="block text-xs font-serif font-medium mb-1">
-                  Source Feed URL / Endpoint <span className="text-amber-500">*</span>
+                  Novel Source Link <span className="text-amber-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={newUrl}
                   onChange={(e) => setNewUrl(e.target.value)}
-                  placeholder="https://catalog.example.com/opds or https://repo.json"
-                  className={`w-full text-xs font-mono rounded-xl px-3 py-2 outline-none border transition-colors ${
+                  placeholder="https://wtr-lab.com or https://novelfire.com"
+                  className={`w-full text-xs font-mono rounded-xl px-3 py-2.5 outline-none border transition-colors ${
                     isDark
                       ? 'bg-stone-900 border-stone-800 text-stone-100 focus:border-amber-400'
                       : 'bg-stone-100/70 border-stone-300 text-stone-900 focus:border-stone-800'
                   }`}
+                  autoFocus
                   required
                 />
               </div>
 
-              {/* Protocol / Type Selection */}
-              <div>
-                <label className="block text-xs font-serif font-medium mb-1.5">
-                  Source Protocol Type
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { id: 'opds', label: 'OPDS 2.0 Catalog', icon: Database, desc: 'E-book feeds & libraries' },
-                    { id: 'scraper', label: 'Web Scraper Ext', icon: Globe, desc: 'HTML web novel crawler' },
-                    { id: 'rss', label: 'Serial RSS Feed', icon: Rss, desc: 'Chapter notification feed' },
-                    { id: 'api', label: 'Custom REST API', icon: Layers, desc: 'JSON API specification' },
-                  ].map((t) => {
-                    const isSelected = newType === t.id;
-                    const TypeIcon = t.icon;
-                    return (
-                      <button
-                        key={t.id}
-                        type="button"
-                        onClick={() => setNewType(t.id as SourceType)}
-                        className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
-                          isSelected
-                            ? isDark
-                              ? 'border-amber-400 bg-amber-950/20 text-stone-100 shadow-xs'
-                              : 'border-stone-900 bg-stone-100 text-stone-900 shadow-xs'
-                            : isDark
-                            ? 'border-stone-800 bg-stone-900/40 text-stone-400 hover:border-stone-700'
-                            : 'border-stone-200 bg-stone-50 text-stone-600 hover:border-stone-300'
-                        }`}
-                      >
-                        <div className="flex items-center gap-1.5">
-                          <TypeIcon className="w-3.5 h-3.5 text-amber-500" />
-                          <span className="text-xs font-medium font-serif">{t.label}</span>
-                        </div>
-                        <span className="text-[10px] block opacity-70 mt-0.5">{t.desc}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Description */}
+              {/* Source Name (Optional) */}
               <div>
                 <label className="block text-xs font-serif font-medium mb-1">
-                  Description <span className="opacity-50 text-[10px] font-sans font-normal">(Optional)</span>
+                  Source Name <span className="opacity-50 text-[10px] font-sans font-normal">(Optional)</span>
                 </label>
                 <input
                   type="text"
-                  value={newDescription}
-                  onChange={(e) => setNewDescription(e.target.value)}
-                  placeholder="Notes about content, genre, or archive"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  placeholder="e.g. WTR-LAB, NovelFire"
                   className={`w-full text-xs rounded-xl px-3 py-2 outline-none border transition-colors ${
                     isDark
                       ? 'bg-stone-900 border-stone-800 text-stone-100 focus:border-amber-400'
@@ -995,7 +814,7 @@ export const ScreenExplore: React.FC<ScreenExploreProps> = ({
                       : 'bg-stone-900 text-stone-50 hover:bg-stone-800'
                   }`}
                 >
-                  Save & Add Source
+                  Add Source
                 </button>
               </div>
             </form>

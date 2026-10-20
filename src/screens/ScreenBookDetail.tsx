@@ -6,20 +6,15 @@ import {
   Star,
   BookOpen,
   CheckCircle2,
-  ChevronRight,
-  ChevronDown,
-  ChevronUp,
+  Download,
   CloudDownload,
-  MessageSquare,
-  Globe,
   Check,
   X,
-  Send,
-  Languages,
   Share2,
   Headphones,
   Sparkles,
-  Library
+  Library,
+  ChevronRight
 } from 'lucide-react';
 import { Book } from '../data/novelData';
 
@@ -44,27 +39,9 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
   const [isSaved, setIsSaved] = useState(true);
   const [isSynopsisExpanded, setIsSynopsisExpanded] = useState(false);
   const [isDownloaded, setIsDownloaded] = useState(false);
+  const [downloadedChapters, setDownloadedChapters] = useState<Record<number, boolean>>({});
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
-  const [isDiscussionsOpen, setIsDiscussionsOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-
-  const [comments, setComments] = useState([
-    {
-      id: 1,
-      user: 'SwordDaoMaster',
-      time: '3h ago',
-      text: 'The cultivation breakthrough in Chapter 3 gives goosebumps! Best translation release of the month.',
-      likes: 38
-    },
-    {
-      id: 2,
-      user: 'IsekaiScholar',
-      time: '8h ago',
-      text: 'The power system is consistent and the character interactions feel genuine. Highly recommended binge.',
-      likes: 21
-    }
-  ]);
-  const [newComment, setNewComment] = useState('');
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -77,9 +54,27 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
     showToast(next ? 'Added to your Library' : 'Removed from Library');
   };
 
-  const handleDownload = () => {
+  const handleDownloadAll = () => {
     setIsDownloaded(true);
+    const allDownloaded: Record<number, boolean> = {};
+    book.chapters.forEach((ch) => {
+      allDownloaded[ch.id] = true;
+    });
+    setDownloadedChapters(allDownloaded);
     showToast(`Cached ${book.chapters.length} chapters for offline reading`);
+  };
+
+  const handleDownloadChapter = (e: React.MouseEvent, chId: number, chTitle: string) => {
+    e.stopPropagation();
+    setDownloadedChapters((prev) => ({
+      ...prev,
+      [chId]: !prev[chId],
+    }));
+    showToast(
+      downloadedChapters[chId]
+        ? `Removed Chapter ${chId} from offline cache`
+        : `Downloaded Chapter ${chId} for offline reading`
+    );
   };
 
   const handleShare = () => {
@@ -91,23 +86,6 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
     }
   };
 
-  const handleAddComment = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newComment.trim()) return;
-    setComments([
-      {
-        id: Date.now(),
-        user: 'You',
-        time: 'Just now',
-        text: newComment.trim(),
-        likes: 1
-      },
-      ...comments
-    ]);
-    setNewComment('');
-    showToast('Comment posted to novel discussion');
-  };
-
   // Filter out any webnovel, lightnovel, or ongoing tags as requested
   const displayTags = (book.tags || [book.genre]).filter(
     (tag) => !/web\s*novel|light\s*novel|ongoing/i.test(tag)
@@ -116,7 +94,7 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
   return (
     <div
       className={`flex-1 flex flex-col transition-colors duration-300 overflow-y-auto pb-12 relative select-none ${
-        isDark ? 'bg-[#000000] text-stone-100' : 'bg-[#FAF8F5] text-stone-900'
+        isDark ? 'bg-[#0A0A0A] text-stone-100' : 'bg-[#FFFFFF] text-stone-900'
       }`}
     >
       {/* Ambient Atmospheric Backdrop Glow */}
@@ -129,7 +107,7 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
         }}
       />
 
-      {/* Floating App Bar: Back button on Left, Title center, Three dots pull-up tab on Right (Favorite and Theme button removed) */}
+      {/* Floating App Bar: Back button on Left, Title center, Three dots pull-up tab on Right */}
       <header className="px-4 pt-3 pb-2 sticky top-0 z-20 flex items-center justify-between backdrop-blur-md bg-opacity-80">
         <button
           type="button"
@@ -152,7 +130,7 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
           {book.title}
         </span>
 
-        {/* Three dots icon button in place of removed favorite and theme buttons */}
+        {/* Three dots icon button */}
         <button
           type="button"
           onClick={() => setIsBottomSheetOpen(true)}
@@ -185,7 +163,7 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
 
       {/* Novel Hero Layout: Cover to LEFT with Title NEXT TO IT and Author UNDER IT */}
       <div className="px-5 pt-3 pb-4 relative z-10 flex gap-4 items-start">
-        {/* Novel Cover on the LEFT (Clean with no webnovel or ongoing badges) */}
+        {/* Novel Cover on the LEFT */}
         <div
           className={`relative shrink-0 w-28 h-40 sm:w-32 sm:h-44 rounded-xl overflow-hidden shadow-xl transition-all duration-300 group ${
             isDark
@@ -209,7 +187,7 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
 
         {/* Right Side: Title NEXT to Cover, Author UNDER Title, Genre Tags & Stats */}
         <div className="flex-1 min-w-0 flex flex-col justify-center">
-          {/* Genre / Subgenre Tags (webnovel and ongoing tags excluded) */}
+          {/* Genre / Subgenre Tags */}
           <div className="flex flex-wrap gap-1.5 mb-1.5">
             {displayTags.slice(0, 3).map((tag, i) => (
               <span
@@ -234,20 +212,12 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
             {book.title}
           </h1>
 
-          {/* Author Name Under Title (trans by removed as requested) */}
+          {/* Author Name Under Title */}
           <p className={`text-xs font-medium mt-1 ${isDark ? 'text-stone-400' : 'text-stone-600'}`}>
             by <span className="font-semibold">{book.author}</span>
           </p>
 
-          {/* Source Attribution */}
-          {book.source && (
-            <div className="flex items-center gap-1 text-[11px] font-mono text-stone-500 mt-1">
-              <Globe className="w-3 h-3 opacity-70" />
-              <span className="truncate">{book.source}</span>
-            </div>
-          )}
-
-          {/* Compact Stats Pill */}
+          {/* Compact Stats Pill: rating and CH X/X in same size just a few pixels higher */}
           <div
             className={`flex items-center gap-2 text-[11px] mt-2.5 px-2.5 py-1 rounded-full font-mono tabular-nums w-fit transition-colors ${
               isDark ? 'bg-white/5 text-stone-300' : 'bg-stone-200/60 text-stone-600'
@@ -258,74 +228,54 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
               {book.rating}
             </span>
             <span className="opacity-40" aria-hidden="true">·</span>
-            <span>{book.totalChapters || book.chapters.length} Ch.</span>
-            <span className="opacity-40" aria-hidden="true">·</span>
-            <span className="text-amber-400 font-semibold">Ch. {book.currentChapter || 1}</span>
+            <span
+              className={`font-semibold inline-block relative -top-[2px] ${
+                isDark ? 'text-amber-400' : 'text-stone-800'
+              }`}
+            >
+              CH {book.currentChapter || 1}/{book.totalChapters || book.chapters.length}
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Primary Action Button & Quick Actions */}
-      <div className="px-5 py-2 relative z-10 flex flex-col gap-2">
+      {/* Primary Action Button Row: Read button 60% and Download button 40% */}
+      <div className="px-5 py-2 relative z-10 flex items-center gap-2.5">
         <button
           type="button"
           onClick={() => onOpenReader(book)}
-          className={`w-full min-h-[48px] text-xs font-semibold rounded-2xl transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 shadow-lg cursor-pointer ${
+          className={`w-[60%] flex-[6] min-h-[46px] text-xs font-semibold rounded-2xl transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 shadow-lg cursor-pointer ${
             isDark
               ? 'bg-amber-400 text-black hover:bg-amber-300 shadow-amber-950/20'
               : 'bg-stone-900 text-white hover:bg-stone-800 shadow-stone-400/30'
           }`}
         >
           <BookOpen className="w-4 h-4 stroke-[2.2]" />
-          <span>Continue Ch. {book.currentChapter || 1}</span>
+          <span>Read</span>
         </button>
 
-        {/* Utility Web Novel Buttons: Download Offline & Discussions */}
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            onClick={handleDownload}
-            className={`min-h-[40px] px-3 rounded-xl text-xs font-medium flex items-center justify-center gap-1.5 border transition-all cursor-pointer ${
-              isDownloaded
-                ? 'bg-emerald-950/30 border-emerald-500/40 text-emerald-400'
-                : isDark
-                ? 'bg-white/5 border-white/10 text-stone-300 hover:bg-white/10'
-                : 'bg-stone-200/70 border-stone-300 text-stone-700 hover:bg-stone-200'
-            }`}
-          >
-            <CloudDownload className="w-3.5 h-3.5" />
-            <span>{isDownloaded ? 'Cached Offline' : 'Cache Chapters'}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setIsDiscussionsOpen(true)}
-            className={`min-h-[40px] px-3 rounded-xl text-xs font-medium flex items-center justify-center gap-1.5 border transition-all cursor-pointer ${
-              isDark
-                ? 'bg-white/5 border-white/10 text-stone-300 hover:bg-white/10'
-                : 'bg-stone-200/70 border-stone-300 text-stone-700 hover:bg-stone-200'
-            }`}
-          >
-            <MessageSquare className="w-3.5 h-3.5" />
-            <span>Discussions ({comments.length})</span>
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={handleDownloadAll}
+          className={`w-[40%] flex-[4] min-h-[46px] px-3 rounded-2xl text-xs font-medium flex items-center justify-center gap-1.5 border transition-all duration-200 active:scale-[0.98] cursor-pointer ${
+            isDownloaded
+              ? 'bg-emerald-950/30 border-emerald-500/40 text-emerald-400'
+              : isDark
+              ? 'bg-white/5 border-white/10 text-stone-200 hover:bg-white/10'
+              : 'bg-stone-200/70 border-stone-300 text-stone-800 hover:bg-stone-200'
+          }`}
+        >
+          <Download className="w-3.5 h-3.5" />
+          <span className="truncate">{isDownloaded ? 'Downloaded' : 'Download'}</span>
+        </button>
       </div>
 
-      {/* Synopsis Section: Changed "read full synopsis" to "show more" */}
+      {/* Synopsis Section: drop down arrow removed */}
       <section className="px-5 pt-4 relative z-10">
         <div className="flex items-center justify-between mb-1.5">
           <h3 className={`text-[11px] font-mono uppercase tracking-widest font-medium ${isDark ? 'text-stone-500' : 'text-stone-400'}`}>
             Synopsis
           </h3>
-          <button
-            type="button"
-            onClick={() => setIsSynopsisExpanded(!isSynopsisExpanded)}
-            className="text-stone-400 hover:text-stone-200 transition-colors cursor-pointer"
-            aria-label="Toggle synopsis"
-          >
-            {isSynopsisExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-          </button>
         </div>
 
         <p
@@ -336,7 +286,7 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
           {book.synopsis}
         </p>
 
-        {/* Expansion link: "Show more" / "Show less" as requested */}
+        {/* Expansion link: "Show more" / "Show less" */}
         <button
           type="button"
           onClick={() => setIsSynopsisExpanded(!isSynopsisExpanded)}
@@ -346,12 +296,6 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
         >
           {isSynopsisExpanded ? 'Show less' : 'Show more'}
         </button>
-
-        {/* Release & Translation info */}
-        <div className="flex items-center gap-2 mt-3 pt-2 text-[11px] font-mono text-stone-500 border-t border-stone-800/40">
-          <Languages className="w-3 h-3" />
-          <span>{book.source} · {book.originalLanguage || 'Original'}</span>
-        </div>
       </section>
 
       {/* Chapter Index Sequence */}
@@ -366,41 +310,53 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
         </div>
 
         <div className="space-y-1">
-          {book.chapters.map((ch) => (
-            <div
-              key={ch.id}
-              onClick={() => onOpenReader(book)}
-              className={`py-3 px-3 rounded-xl flex items-center justify-between cursor-pointer transition-all ${
-                isDark
-                  ? 'hover:bg-white/[0.06] active:bg-white/[0.08]'
-                  : 'hover:bg-stone-200/50 active:bg-stone-200/70'
-              }`}
-            >
-              <div className="flex items-center gap-3.5 min-w-0 pr-2">
-                <span className={`font-mono text-xs tabular-nums w-6 shrink-0 ${isDark ? 'text-stone-600' : 'text-stone-400'}`}>
-                  {ch.id < 10 ? `0${ch.id}` : ch.id}
-                </span>
-                <div className="min-w-0">
-                  <h4 className={`text-xs font-serif font-medium truncate ${isDark ? 'text-stone-200' : 'text-stone-900'}`}>
-                    {ch.title}
-                  </h4>
-                  {ch.translatorNote && (
-                    <span className="text-[10px] text-amber-500/80 font-mono block truncate">
-                      Includes translator footnote
-                    </span>
+          {book.chapters.map((ch) => {
+            const isChDownloaded = isDownloaded || !!downloadedChapters[ch.id];
+            return (
+              <div
+                key={ch.id}
+                onClick={() => onOpenReader(book)}
+                className={`py-3 px-3 rounded-xl flex items-center justify-between cursor-pointer transition-all ${
+                  isDark
+                    ? 'hover:bg-white/[0.06] active:bg-white/[0.08]'
+                    : 'hover:bg-stone-200/50 active:bg-stone-200/70'
+                }`}
+              >
+                <div className="flex items-center gap-3.5 min-w-0 pr-2">
+                  <span className={`font-mono text-xs tabular-nums w-6 shrink-0 ${isDark ? 'text-stone-600' : 'text-stone-400'}`}>
+                    {ch.id < 10 ? `0${ch.id}` : ch.id}
+                  </span>
+                  <div className="min-w-0">
+                    <h4 className={`text-xs font-serif font-medium truncate ${isDark ? 'text-stone-200' : 'text-stone-900'}`}>
+                      {ch.title}
+                    </h4>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5 shrink-0">
+                  {ch.isCompleted ? (
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={(e) => handleDownloadChapter(e, ch.id, ch.title)}
+                      className={`p-1 rounded-md transition-colors cursor-pointer ${
+                        isChDownloaded
+                          ? 'text-emerald-500'
+                          : isDark
+                          ? 'text-stone-400 hover:text-stone-200 hover:bg-white/10'
+                          : 'text-stone-500 hover:text-stone-900 hover:bg-stone-200'
+                      }`}
+                      title={isChDownloaded ? 'Downloaded' : 'Download chapter'}
+                      aria-label={`Download ${ch.title}`}
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                    </button>
                   )}
                 </div>
               </div>
-
-              <div className="flex items-center gap-2.5 shrink-0">
-                {ch.isCompleted ? (
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                ) : (
-                  <ChevronRight className={`w-3.5 h-3.5 ${isDark ? 'text-stone-700' : 'text-stone-300'}`} />
-                )}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
@@ -502,7 +458,7 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
               {/* 2. Download for Offline */}
               <button
                 type="button"
-                onClick={handleDownload}
+                onClick={handleDownloadAll}
                 className={`w-full p-2.5 rounded-xl flex items-center justify-between transition-colors cursor-pointer ${
                   isDark ? 'hover:bg-white/5 active:bg-white/10' : 'hover:bg-stone-100 active:bg-stone-200/60'
                 }`}
@@ -647,73 +603,6 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
         </>
       )}
 
-      {/* Discussions Modal */}
-      {isDiscussionsOpen && (
-        <>
-          <div
-            className="fixed inset-0 bg-black/70 backdrop-blur-xs z-50 transition-opacity"
-            onClick={() => setIsDiscussionsOpen(false)}
-            aria-hidden="true"
-          />
-          <div
-            className={`fixed inset-x-0 bottom-0 z-50 rounded-t-3xl p-5 shadow-2xl max-w-lg mx-auto flex flex-col max-h-[80vh] ${
-              isDark ? 'bg-[#141416] text-stone-100 border-t border-white/10' : 'bg-white text-stone-900 border-t border-stone-200'
-            }`}
-          >
-            <div className="w-10 h-1 rounded-full bg-stone-700 mx-auto mb-3" />
-            <div className="flex items-center justify-between pb-3 border-b border-stone-800">
-              <div className="flex items-center gap-2">
-                <MessageSquare className="w-4 h-4 text-amber-400" />
-                <h3 className="font-serif font-bold text-sm">Discussions ({comments.length})</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsDiscussionsOpen(false)}
-                className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 text-stone-400 cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="flex-1 overflow-y-auto py-3 space-y-3">
-              {comments.map((c) => (
-                <div
-                  key={c.id}
-                  className={`p-3 rounded-xl border ${
-                    isDark ? 'bg-white/5 border-white/5' : 'bg-stone-100 border-stone-200'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-1.5 text-xs">
-                    <span className="font-semibold text-amber-400">{c.user}</span>
-                    <span className="text-[10px] font-mono text-stone-500">{c.time}</span>
-                  </div>
-                  <p className="text-xs leading-relaxed text-stone-300">{c.text}</p>
-                </div>
-              ))}
-            </div>
-
-            <form onSubmit={handleAddComment} className="pt-2 flex gap-2">
-              <input
-                type="text"
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Share your thoughts on this novel..."
-                className={`flex-1 text-xs px-3 py-2.5 rounded-xl border focus:outline-none ${
-                  isDark
-                    ? 'bg-black/50 border-stone-700 text-stone-100 placeholder-stone-500 focus:border-amber-400'
-                    : 'bg-stone-100 border-stone-300 text-stone-900 focus:border-stone-800'
-                }`}
-              />
-              <button
-                type="submit"
-                className="px-3.5 py-2.5 rounded-xl bg-amber-400 text-stone-950 text-xs font-semibold flex items-center gap-1 hover:bg-amber-300 cursor-pointer"
-              >
-                <Send className="w-3.5 h-3.5" />
-              </button>
-            </form>
-          </div>
-        </>
-      )}
     </div>
   );
 };

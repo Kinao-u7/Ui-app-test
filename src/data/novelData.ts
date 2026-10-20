@@ -626,26 +626,26 @@ export interface ReaderTheme {
 export const READER_THEMES: Record<string, ReaderTheme> = {
   oled: {
     id: 'oled',
-    name: 'Midnight OLED (Web Novel Standard)',
-    bgClass: 'bg-[#0A0A0C]',
+    name: 'Pure Black',
+    bgClass: 'bg-[#0A0A0A]',
     textClass: 'text-[#E2E2E6]',
     secondaryTextClass: 'text-[#8E8E93]',
     borderClass: 'border-[#222228]',
     accentClass: 'text-[#F59E0B]',
     activeIndicator: 'bg-[#F59E0B]',
-    hexBg: '#0A0A0C',
+    hexBg: '#0A0A0A',
     hexText: '#E2E2E6'
   },
   alabaster: {
     id: 'alabaster',
-    name: 'Paper Cream (Light Novel Print)',
-    bgClass: 'bg-[#FBF8F1]',
+    name: 'Pure White',
+    bgClass: 'bg-[#FFFFFF]',
     textClass: 'text-[#1C1917]',
     secondaryTextClass: 'text-[#78716C]',
-    borderClass: 'border-[#E7E2D8]',
+    borderClass: 'border-[#E5E5E5]',
     accentClass: 'text-[#9A3412]',
     activeIndicator: 'bg-[#1C1917]',
-    hexBg: '#FBF8F1',
+    hexBg: '#FFFFFF',
     hexText: '#1C1917'
   },
   sepia: {

@@ -199,7 +199,7 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
   return (
     <div
       className={`flex-1 flex flex-col transition-colors duration-200 h-full relative overflow-hidden ${
-        isDark ? 'bg-[#000000] text-stone-100' : 'bg-[#FAF8F5] text-stone-900'
+        isDark ? 'bg-[#0A0A0A] text-stone-100' : 'bg-[#FFFFFF] text-stone-900'
       }`}
     >
       {/* Scrollable Content Container */}
@@ -208,8 +208,8 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
         <header
           className={`px-4 pt-3 pb-3 border-b sticky top-0 backdrop-blur-md z-20 flex items-center justify-between ${
             isDark
-              ? 'bg-[#000000]/90 border-neutral-900 text-stone-100'
-              : 'bg-[#FAF8F5]/90 border-stone-200/70 text-stone-900'
+              ? 'bg-[#0A0A0A]/90 border-neutral-900 text-stone-100'
+              : 'bg-[#FFFFFF]/90 border-stone-200/70 text-stone-900'
           }`}
         >
           <div>

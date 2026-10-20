@@ -64,7 +64,7 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
 
         {/* Screen Bezel & Dynamic Island Container */}
         <div className={`relative w-full h-full rounded-[38px] overflow-hidden flex flex-col shadow-inner transition-colors duration-200 ${
-          isDark ? 'bg-[#000000]' : 'bg-[#FAF8F5]'
+          isDark ? 'bg-[#0A0A0A]' : 'bg-[#FFFFFF]'
         }`}>
           {/* Top Status Bar & Dynamic Island */}
           <div className="shrink-0 h-10 px-6 pt-3 flex items-center justify-between z-30 select-none pointer-events-none">

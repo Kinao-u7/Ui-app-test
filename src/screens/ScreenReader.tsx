@@ -222,48 +222,76 @@ export const ScreenReader: React.FC<ScreenReaderProps> = ({
             </p>
           </div>
 
-          {/* Body Prose with Drop Cap and Highlight Interaction */}
+          {/* Body Prose dynamically rendered from chapter content */}
           <div
             style={{ fontSize: `${fontSize}px` }}
             className={`${getFontFamilyClass()} ${getLineHeightClass()} space-y-5 select-text`}
           >
-            <p className="drop-cap">
-              Dawn brought no illumination, only a lightening of the heavy northern gray. The barometer in the vestibule had dropped twelve millibars between midnight and five, its brass needle shivering against the glass like a trapped moth.
-            </p>
-
-            <p>
-              The sea was no longer blue or green; it was the color of lead fresh from the crucible. Each wave rose not with sudden violence, but with the measured, terrifying weight of displaced continents sliding across cold bedrock.
-            </p>
-
-            {/* Clickable Interactive Margin Highlight */}
-            <div className="relative my-6 pl-4 border-l-2 border-amber-600/80 group">
-              <p
-                onClick={() =>
-                  setActiveHighlightNote(
-                    activeHighlightNote ? null : 'The shoreline does not end; it merely yields to the swell, surrendering its edges until the tide decides what may remain.'
-                  )
-                }
-                className="italic cursor-pointer hover:opacity-90 bg-amber-500/10 px-2 py-1 rounded transition-colors"
-              >
-                “The shoreline does not end; it merely yields to the swell, surrendering its edges until the tide decides what may remain.”
+            {chapter.content && chapter.content.length > 0 ? (
+              chapter.content.map((para, pIdx) => (
+                <p
+                  key={pIdx}
+                  className={pIdx === 0 ? 'drop-cap' : ''}
+                >
+                  {para}
+                </p>
+              ))
+            ) : (
+              <p className="drop-cap">
+                Fang Yuan circulated his spirit Qi through the thirty-six major meridians, feeling the resonance of the sword intent deep within his dantian.
               </p>
-              <div className="flex items-center justify-between text-[11px] font-mono opacity-60 mt-1">
-                <span>Margin Note #14 · Tap to inspect</span>
-                <span className="text-amber-700 font-semibold">Atelier Highlight</span>
+            )}
+
+            {/* Translator's Footnote for Web Novel / Light Novel terminology */}
+            {chapter.translatorNote && (
+              <div className="mt-8 p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/10 text-xs transition-colors">
+                <span className="font-mono font-semibold uppercase text-amber-500 block mb-1">
+                  Translator's Footnote
+                </span>
+                <p className="opacity-90 leading-relaxed font-sans">{chapter.translatorNote}</p>
               </div>
+            )}
+
+            {/* Chapter Navigation Controls */}
+            <div className="mt-10 pt-6 border-t border-current/20 flex items-center justify-between">
+              <button
+                type="button"
+                disabled={currentChapterIdx <= 0}
+                onClick={() => {
+                  if (currentChapterIdx > 0) {
+                    setCurrentChapterIdx(prev => prev - 1);
+                    proseContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+                  }
+                }}
+                className={`px-3.5 py-2 rounded-xl text-xs font-medium border flex items-center gap-1.5 transition-colors cursor-pointer ${
+                  currentChapterIdx <= 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-amber-500/10'
+                }`}
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+                <span>Prev Chapter</span>
+              </button>
+
+              <span className="text-[11px] font-mono opacity-60">
+                Ch. {chapter.id} / {book.chapters.length}
+              </span>
+
+              <button
+                type="button"
+                disabled={currentChapterIdx >= book.chapters.length - 1}
+                onClick={() => {
+                  if (currentChapterIdx < book.chapters.length - 1) {
+                    setCurrentChapterIdx(prev => prev + 1);
+                    proseContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+                  }
+                }}
+                className={`px-3.5 py-2 rounded-xl text-xs font-medium border flex items-center gap-1.5 transition-colors cursor-pointer ${
+                  currentChapterIdx >= book.chapters.length - 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-amber-500/10'
+                }`}
+              >
+                <span>Next Chapter</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
             </div>
-
-            <p>
-              I sat by the iron stove with a mug of chicory tea. Through the eight-millimeter pane, I watched the spray leap forty meters up the granite face, freezing into beads of crystalline brine against the glass before sliding downward like mercury.
-            </p>
-
-            <p>
-              Granite, I had learned in thirty years of drafting, does not negotiate. It withstands or it fractures. The human mind, however, does neither; it erodes into smooth pebbles, rounded by the persistence of salt and silence.
-            </p>
-
-            <p>
-              By noon, the radio operator at Kristiansand reported three drifting buoys off Lindesnes. I did not log them. In this outpost, recording the lost has always been secondary to keeping the hearth alive.
-            </p>
           </div>
         </div>
       </div>

@@ -332,6 +332,11 @@ export default function App() {
                 setSelectedBook(book);
                 setCurrentScreen('reader');
               }}
+              onOpenAudio={(book) => {
+                setSelectedBook(book);
+                setCurrentScreen('audio');
+              }}
+              onOpenStudio={() => setCurrentScreen('studio')}
               isDark={isDarkMode}
               onToggleDarkMode={toggleDarkMode}
             />
@@ -349,15 +354,15 @@ export default function App() {
   };
 
   const screensMeta: Array<{ id: ScreenId; title: string; num: number; desc: string }> = [
-    { id: 'shelf', title: 'Library', num: 1, desc: '3x3 minimal grid, continue reading hero, list switcher & empty state' },
-    { id: 'explore', title: 'Discover', num: 2, desc: 'Curated editions, author spotlight, and discovery catalog' },
-    { id: 'downloads', title: 'Downloads', num: 3, desc: 'Offline storage vault, cached chapters, and auto-download management' },
-    { id: 'settings', title: 'Settings', num: 4, desc: 'Appearance, reader typography, offline downloads & TTS narration hub' },
-    { id: 'reader', title: 'Reader Chamber', num: 5, desc: 'Distraction-free e-ink reader with margins and typography controls' },
-    { id: 'detail', title: 'Novel Details', num: 6, desc: 'Clean monograph presentation and unadorned chapter sequence' },
+    { id: 'shelf', title: 'Library', num: 1, desc: 'Web & light novel bookshelf, continue reading hero, WN/LN switcher & updates' },
+    { id: 'explore', title: 'Discover', num: 2, desc: 'Wuxiaworld, Royal Road, Syosetu & NovelUpdates catalogs and sources' },
+    { id: 'downloads', title: 'Downloads', num: 3, desc: 'Offline storage vault, cached chapters, and batch chapter downloader' },
+    { id: 'settings', title: 'Settings', num: 4, desc: 'Continuous scroll, typography, offline caching & TTS narration hub' },
+    { id: 'reader', title: 'Reader Chamber', num: 5, desc: 'Immersive web novel reader with translator notes, themes & chapter jumper' },
+    { id: 'detail', title: 'Novel Details', num: 6, desc: 'Web novel & light novel synopsis, chapters, source tags & discussions' },
     { id: 'contents', title: 'Index & Marginalia', num: 7, desc: 'Chapter timeline, saved quotes, and bookmarks' },
     { id: 'audio', title: 'Whisper Studio', num: 8, desc: 'Ambient soundscape and audiobook player' },
-    { id: 'studio', title: 'Scene Studio', num: 9, desc: 'Literary illustration and book cover art laboratory' },
+    { id: 'studio', title: 'Scene Studio', num: 9, desc: 'Web novel cover and scene visualization laboratory' },
   ];
 
   return (

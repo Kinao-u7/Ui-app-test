@@ -16,7 +16,12 @@ import {
   Clock,
   ArrowDownAZ,
   Layers,
-  Library
+  Library,
+  SlidersHorizontal,
+  Pencil,
+  Trash2,
+  Plus,
+  GripVertical
 } from 'lucide-react';
 import { Book, NOVEL_BOOKS } from '../data/novelData';
 
@@ -46,19 +51,30 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
   const libraryBooks = books !== undefined ? books : NOVEL_BOOKS;
   const isLibraryEmpty = libraryBooks.length === 0;
 
-  const [activeTab, setActiveTab] = useState<'all' | 'reading' | 'finished'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'web' | 'light' | 'reading' | 'finished'>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   // Pull-up Sort Sheet State
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [sortOption, setSortOption] = useState<'progress' | 'title' | 'chapters' | 'rating'>('progress');
 
+  // Category Management Bottom Sheet State
+  const [isCategorySheetOpen, setIsCategorySheetOpen] = useState(false);
+  const [categoriesList, setCategoriesList] = useState([
+    'Web Novels',
+    'Light Novels',
+    'Cultivation',
+    'Isekai & Fantasy',
+    'Completed'
+  ]);
+  const [newCategoryName, setNewCategoryName] = useState('');
+
   const [isUpdatesOpen, setIsUpdatesOpen] = useState(false);
   const [isRefreshingUpdates, setIsRefreshingUpdates] = useState(false);
   const [recentUpdates, setRecentUpdates] = useState([
-    { id: 1, bookId: 'solitude-by-the-sea', bookTitle: 'Solitude by the Sea', chapter: 4, releaseNote: 'New chapter: The Tides of Memory', time: 'Today' },
-    { id: 2, bookId: 'whispers-in-the-rain', bookTitle: 'Whispers in the Rain', chapter: 6, releaseNote: 'Chapter 6 added with author commentary', time: 'Yesterday' },
-    { id: 3, bookId: 'the-glass-archivist', bookTitle: 'The Glass Archivist', chapter: 10, releaseNote: 'Climactic Arc translation updated', time: '3d ago' },
+    { id: 1, bookId: 'a-dream-through-a-thousand-years', bookTitle: 'A Dream Through a Thousand Years', chapter: 266, releaseNote: 'Ch. 266: Severing the Silver River translated', time: '12m ago' },
+    { id: 2, bookId: 'soul-land-seven-evolutions', bookTitle: 'Soul Land: Seven Evolutions', chapter: 80, releaseNote: 'Ch. 80: Metamorphosis of the Heavenly Spear', time: '1h ago' },
+    { id: 3, bookId: 'solo-rebirth-abyssal-monarch', bookTitle: 'Solo Rebirth: Abyssal Monarch', chapter: 412, releaseNote: 'Ch. 412: Temple of the Demon King unlocked', time: 'Today' },
   ]);
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -114,6 +130,8 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
 
   const readingBooks = libraryBooks.filter(b => b.progressPercent > 0 && b.progressPercent < 100);
   const finishedBooks = libraryBooks.filter(b => b.progressPercent >= 80);
+  const webNovels = libraryBooks.filter(b => b.novelType === 'Web Novel');
+  const lightNovels = libraryBooks.filter(b => b.novelType === 'Light Novel');
   const currentReadingBook = readingBooks[0] || libraryBooks[0];
 
   const baseBooks =
@@ -121,13 +139,18 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
       ? readingBooks
       : activeTab === 'finished'
       ? finishedBooks
+      : activeTab === 'web'
+      ? webNovels
+      : activeTab === 'light'
+      ? lightNovels
       : libraryBooks;
 
   const filteredBooks = searchQuery.trim()
     ? baseBooks.filter(b =>
         b.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         b.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        b.genre.toLowerCase().includes(searchQuery.toLowerCase())
+        b.genre.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (b.tags && b.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase())))
       )
     : baseBooks;
 
@@ -240,7 +263,11 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
               }`}
             >
               <Sparkles className="w-3.5 h-3.5" />
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-amber-500 rounded-full" />
+              <span
+                className={`absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-500 rounded-full ring-2 ${
+                  isDark ? 'ring-black' : 'ring-white'
+                }`}
+              />
             </button>
 
             {/* 3. Search Button */}
@@ -280,7 +307,11 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
             >
               <Bell className="w-3.5 h-3.5" />
               {unreadCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-amber-500 rounded-full" />
+                <span
+                  className={`absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-500 rounded-full ring-2 ${
+                    isDark ? 'ring-black' : 'ring-white'
+                  }`}
+                />
               )}
             </button>
           </div>
@@ -474,48 +505,46 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
         ) : (
           /* Populated Library Screen */
           <>
-            {/* Categories Filter Tabs + Pull-up Sort Tab */}
+            {/* Categories Filter Tabs: Only "All" with number + 3-slider pill to manage categories */}
             <section className="px-4 pt-2.5 pb-1">
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-                {[
-                  { id: 'all', label: `All Novels (${libraryBooks.length})` },
-                  { id: 'reading', label: `Continue Reading (${readingBooks.length})` },
-                  { id: 'finished', label: `Finished (${finishedBooks.length})` },
-                ].map((t) => (
-                  <button
-                    key={t.id}
-                    type="button"
-                    onClick={() => setActiveTab(t.id as any)}
-                    className={`min-h-[32px] px-3 text-xs font-medium rounded-full whitespace-nowrap transition-colors cursor-pointer ${
-                      activeTab === t.id
-                        ? isDark
-                          ? 'bg-amber-400 text-stone-950 font-semibold shadow-xs'
-                          : 'bg-stone-900 text-stone-50 shadow-xs'
-                        : isDark
-                        ? 'bg-stone-800/80 text-stone-400 hover:bg-stone-800 hover:text-stone-200'
-                        : 'bg-stone-200/60 text-stone-600 hover:bg-stone-200 hover:text-stone-900'
-                    }`}
-                  >
-                    {t.label}
-                  </button>
-                ))}
-
-                {/* Pull-Up Sort Tab Button in the Filter Bar */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                {/* "All" Category Pill without brackets, number matching percentage number style */}
                 <button
                   type="button"
-                  onClick={() => setIsSortOpen(true)}
-                  className={`min-h-[32px] px-3 text-xs font-medium rounded-full whitespace-nowrap transition-colors flex items-center gap-1.5 border cursor-pointer ${
-                    sortOption !== 'progress'
+                  onClick={() => setActiveTab('all')}
+                  className={`min-h-[32px] px-3.5 text-xs font-medium rounded-full whitespace-nowrap border transition-all cursor-pointer flex items-center gap-1.5 ${
+                    activeTab === 'all'
                       ? isDark
-                        ? 'border-amber-400/80 bg-amber-950/40 text-amber-400 font-semibold'
-                        : 'border-amber-600/80 bg-amber-50 text-amber-900 font-semibold'
+                        ? 'border-amber-400 text-amber-400 bg-amber-400/10 font-semibold shadow-2xs'
+                        : 'border-amber-600 text-amber-800 bg-amber-50 font-semibold shadow-2xs'
                       : isDark
-                      ? 'border-stone-800 bg-stone-900/60 text-stone-300 hover:border-stone-700'
-                      : 'border-stone-200/90 bg-stone-100/70 text-stone-600 hover:border-stone-300'
+                      ? 'border-stone-800 text-stone-400 hover:border-stone-700 hover:text-stone-200 bg-transparent'
+                      : 'border-stone-300/80 text-stone-600 hover:border-stone-400 hover:text-stone-900 bg-transparent'
                   }`}
                 >
-                  <ArrowDownWideNarrow className="w-3.5 h-3.5 text-amber-500" />
-                  <span>Sort: {sortOptions.find(o => o.id === sortOption)?.label}</span>
+                  <span>All</span>
+                  <span className="text-[10px] font-mono tabular-nums">
+                    {libraryBooks.length}
+                  </span>
+                </button>
+
+                {/* 3-Slider Icon Pill: Opens Categories Management Bottom Sheet */}
+                <button
+                  type="button"
+                  onClick={() => setIsCategorySheetOpen(true)}
+                  aria-label="Manage Categories"
+                  title="Manage Categories"
+                  className={`min-h-[32px] px-3 text-xs font-medium rounded-full whitespace-nowrap border transition-all cursor-pointer flex items-center gap-1.5 ${
+                    isCategorySheetOpen
+                      ? isDark
+                        ? 'border-amber-400 text-amber-400 bg-amber-400/10 font-semibold'
+                        : 'border-amber-600 text-amber-800 bg-amber-50 font-semibold'
+                      : isDark
+                      ? 'border-stone-800 text-stone-400 hover:border-stone-700 hover:text-stone-200 bg-transparent'
+                      : 'border-stone-300/80 text-stone-600 hover:border-stone-400 hover:text-stone-900 bg-transparent'
+                  }`}
+                >
+                  <SlidersHorizontal className="w-3.5 h-3.5 stroke-[1.8]" />
                 </button>
               </div>
             </section>
@@ -527,9 +556,6 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
                   <span className={`text-[10px] uppercase font-mono tracking-widest ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
                     Continue Reading
                   </span>
-                  <span className={`text-[10px] font-mono ${isDark ? 'text-amber-400' : 'text-stone-400'}`}>
-                    {currentReadingBook.currentChapter}/{currentReadingBook.chapters.length} ({currentReadingBook.progressPercent}%)
-                  </span>
                 </div>
 
                 <div
@@ -538,7 +564,7 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
                   }`}
                 >
                   <div className="flex gap-3.5">
-                    {/* Book Cover Presentation */}
+                    {/* Book Cover Presentation (progress line removed from cover as requested) */}
                     <div
                       onClick={() => onSelectBook(currentReadingBook)}
                       className="w-20 h-30 shrink-0 rounded-lg overflow-hidden shadow-md cursor-pointer relative bg-stone-100 group-hover:shadow-lg transition-shadow"
@@ -554,25 +580,18 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-stone-950/40 via-transparent to-transparent pointer-events-none" />
                       <div className="absolute top-1 left-1.5 w-1.5 h-3 bg-amber-600 rounded-b-sm shadow-sm" />
-                      {currentReadingBook.progressPercent > 0 && (
-                        <div className="absolute bottom-0 inset-x-0 h-0.5 bg-black/40">
-                          <div
-                            className={`h-full ${isDark ? 'bg-amber-400' : 'bg-white'}`}
-                            style={{ width: `${currentReadingBook.progressPercent}%` }}
-                          />
-                        </div>
-                      )}
                     </div>
 
                     {/* Book Metadata */}
                     <div className="flex-1 flex flex-col justify-between min-w-0">
                       <div>
+                        {/* Replaced Xianxia/Cultivation genre heading with CH x/x */}
                         <span
-                          className={`text-[10px] font-medium tracking-wide block mb-0.5 ${
+                          className={`text-[10px] font-mono font-semibold tracking-wider block mb-0.5 ${
                             isDark ? 'text-amber-400' : 'text-amber-800'
                           }`}
                         >
-                          {currentReadingBook.genre}
+                          CH {currentReadingBook.currentChapter || 1}/{currentReadingBook.totalChapters || currentReadingBook.chapters.length}
                         </span>
                         <h2
                           onClick={() => onSelectBook(currentReadingBook)}
@@ -585,23 +604,23 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
                         <p className={`text-[11px] mt-0.5 truncate ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
                           by {currentReadingBook.author}
                         </p>
+                      </div>
 
-                        <div className={`flex items-center gap-1.5 text-[10px] mt-1.5 font-mono tabular-nums ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
-                          <span className="font-semibold text-amber-500 dark:text-amber-400">
-                            {currentReadingBook.currentChapter}/{currentReadingBook.chapters.length} Ch.
-                          </span>
-                          <span aria-hidden="true">·</span>
-                          <span>{currentReadingBook.readTime}</span>
-                          <span aria-hidden="true">·</span>
-                          <span className={`flex items-center gap-0.5 ${isDark ? 'text-stone-200' : 'text-stone-700'}`}>
-                            <Star className="w-3 h-3 fill-amber-500 text-amber-500 inline" />
-                            {currentReadingBook.rating}
-                          </span>
+                      {/* Moved progress line between title and resume reading button with small percentage next to it at the end */}
+                      <div className="flex items-center gap-2 mt-2 mb-1.5">
+                        <div className={`flex-1 h-1 rounded-full overflow-hidden ${isDark ? 'bg-stone-800' : 'bg-stone-200'}`}>
+                          <div
+                            className={`h-full rounded-full transition-all duration-300 ${isDark ? 'bg-amber-400' : 'bg-stone-800'}`}
+                            style={{ width: `${currentReadingBook.progressPercent}%` }}
+                          />
                         </div>
+                        <span className={`text-[10px] font-mono tabular-nums shrink-0 font-medium ${isDark ? 'text-amber-400' : 'text-stone-600'}`}>
+                          {currentReadingBook.progressPercent}%
+                        </span>
                       </div>
 
                       {/* Action Button */}
-                      <div className={`flex items-center gap-2 mt-2 pt-1.5 border-t ${isDark ? 'border-neutral-900' : 'border-stone-100'}`}>
+                      <div className={`flex items-center gap-2 pt-1.5 border-t ${isDark ? 'border-neutral-900' : 'border-stone-100'}`}>
                         <button
                           type="button"
                           onClick={() => onOpenReader(currentReadingBook)}
@@ -623,30 +642,11 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
 
             {/* Novel Display (3x3 Minimal Grid OR Minimal List) */}
             <section className="px-4 pt-2 flex-1">
-              {/* Header with novels count, active sort pull-up trigger, and compact Grid / List Switcher */}
+              {/* Header with novels count, removed sort button between count and grid/list */}
               <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <span className={`text-[10px] font-mono uppercase tracking-wider ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
-                    Library Novels ({sortedBooks.length})
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setIsSortOpen(true)}
-                    className={`text-[9px] font-mono px-2 py-0.5 rounded border flex items-center gap-1 transition-colors cursor-pointer ${
-                      sortOption !== 'progress'
-                        ? isDark
-                          ? 'bg-amber-950/30 border-amber-900/40 text-amber-400 font-medium'
-                          : 'bg-amber-50 border-amber-200 text-amber-800 font-medium'
-                        : isDark
-                        ? 'bg-stone-900/60 border-stone-800 text-stone-400 hover:text-stone-200'
-                        : 'bg-stone-100 border-stone-200 text-stone-600 hover:text-stone-900'
-                    }`}
-                    title="Pull up Sort Options"
-                  >
-                    <ArrowDownWideNarrow className="w-2.5 h-2.5 text-amber-500" />
-                    <span>{sortOptions.find(o => o.id === sortOption)?.label}</span>
-                  </button>
-                </div>
+                <span className={`text-[10px] font-mono uppercase tracking-wider ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                  Library Novels ({sortedBooks.length})
+                </span>
 
                 {/* Compact Grid / List Switcher */}
                 <div
@@ -698,7 +698,7 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
                       onClick={() => onSelectBook(book)}
                       className="group cursor-pointer flex flex-col transition-transform active:scale-[0.98]"
                     >
-                      {/* Smaller Cover */}
+                      {/* Smaller Cover (LN / WN badge removed as requested) */}
                       <div
                         className={`aspect-[3/4] w-full rounded-md overflow-hidden relative shadow-2xs border mb-1 ${
                           isDark ? 'bg-stone-800 border-stone-800/80' : 'bg-stone-100 border-stone-200/80'
@@ -714,26 +714,20 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
                           }}
                         />
                         
-                        {/* Subtle minimal progress bar along bottom of cover */}
+                        {/* Progress bar on novel cover - Gold (thinner) */}
                         {book.progressPercent > 0 && (
-                          <div className="absolute bottom-0 inset-x-0 h-0.5 bg-black/40">
+                          <div className="absolute bottom-0 inset-x-0 h-0.5 bg-black/50">
                             <div
-                              className={`h-full ${isDark ? 'bg-amber-400' : 'bg-white'}`}
+                              className="h-full bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.6)]"
                               style={{ width: `${book.progressPercent}%` }}
                             />
                           </div>
                         )}
-
-                        {book.progressPercent >= 80 && (
-                          <div className="absolute top-1 right-1 p-0.5 bg-emerald-600/90 text-white rounded-full">
-                            <CheckCircle2 className="w-2.5 h-2.5" />
-                          </div>
-                        )}
                       </div>
 
-                      {/* Novel Name */}
+                      {/* Novel Name (2 lines) */}
                       <h4
-                        className={`font-serif text-[11px] sm:text-xs font-semibold leading-tight line-clamp-1 transition-colors ${
+                        className={`font-serif text-[11px] sm:text-xs font-semibold leading-snug line-clamp-2 min-h-[2rem] transition-colors ${
                           isDark ? 'text-stone-200 group-hover:text-amber-400' : 'text-stone-900 group-hover:underline'
                         }`}
                         title={book.title}
@@ -741,15 +735,10 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
                         {book.title}
                       </h4>
 
-                      {/* Chapter numbers matching exact style, size, color of read progress */}
-                      <div className={`flex items-center justify-between text-[10px] font-mono mt-0.5 px-0.5 ${isDark ? 'text-stone-500' : 'text-stone-400'}`}>
-                        <span>
-                          CH {book.currentChapter}/{book.chapters.length}
-                        </span>
-                        <span>
-                          {book.progressPercent}%
-                        </span>
-                      </div>
+                      {/* Number of chapters under the title */}
+                      <span className={`text-[10px] font-mono mt-0.5 block ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                        {book.totalChapters || book.chapters.length} Chapters
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -782,9 +771,9 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
                             className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                           />
                           {book.progressPercent > 0 && (
-                            <div className="absolute bottom-0 inset-x-0 h-0.5 bg-black/40">
+                            <div className="absolute bottom-0 inset-x-0 h-0.5 bg-black/50">
                               <div
-                                className={`h-full ${isDark ? 'bg-amber-400' : 'bg-white'}`}
+                                className="h-full bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.6)]"
                                 style={{ width: `${book.progressPercent}%` }}
                               />
                             </div>
@@ -803,20 +792,9 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
                           <p className={`text-[11px] truncate mt-0.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
                             by {book.author}
                           </p>
-
-                          {/* Shows Number of Chapters and reading percent in matching font */}
-                          <div className="flex items-center gap-2 mt-1.5">
-                            <span
-                              className={`text-[10px] font-mono px-1.5 py-0.5 rounded-md ${
-                                isDark ? 'bg-stone-800 text-stone-300' : 'bg-stone-200/70 text-stone-700'
-                              }`}
-                            >
-                              {book.currentChapter}/{book.chapters.length} Chapters
-                            </span>
-                            <span className={`text-[10px] font-mono ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
-                              {book.progressPercent}% read
-                            </span>
-                          </div>
+                          <span className={`text-[10px] font-mono mt-0.5 block ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                            {book.totalChapters || book.chapters.length} Chapters
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -972,6 +950,176 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
                   Restore Sample Novels (9)
                 </button>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Pull Up Page / Tab for Manage Categories */}
+      {isCategorySheetOpen && (
+        <div className="absolute inset-0 z-50 flex flex-col justify-end">
+          {/* Dimmed Backdrop */}
+          <div
+            onClick={() => setIsCategorySheetOpen(false)}
+            className="absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity cursor-pointer"
+            aria-label="Close categories sheet"
+          />
+
+          {/* Pull Up Sheet Panel */}
+          <div
+            className={`relative z-10 w-full max-h-[82vh] rounded-t-3xl border-t p-5 pb-6 shadow-2xl transition-transform animate-in slide-in-from-bottom duration-300 flex flex-col ${
+              isDark ? 'bg-[#121214] border-stone-800 text-stone-100' : 'bg-white border-stone-200 text-stone-900'
+            }`}
+          >
+            {/* Grab Handle */}
+            <div className={`w-10 h-1 rounded-full mx-auto mb-4 ${isDark ? 'bg-stone-700' : 'bg-stone-300'}`} />
+
+            {/* Header */}
+            <div className="flex items-start justify-between mb-4 pb-3 border-b border-stone-200/50 dark:border-stone-800">
+              <div className="flex items-center gap-3">
+                <div
+                  className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border ${
+                    isDark
+                      ? 'bg-amber-400/10 border-amber-400/30 text-amber-400'
+                      : 'bg-amber-100 border-amber-200 text-amber-800'
+                  }`}
+                >
+                  <SlidersHorizontal className="w-4 h-4 stroke-[2]" />
+                </div>
+                <div>
+                  <span className={`text-[10px] font-mono uppercase tracking-widest block mb-0.5 ${isDark ? 'text-amber-400' : 'text-stone-400'}`}>
+                    Shelf Organization
+                  </span>
+                  <h3 className="text-base font-serif font-semibold tracking-tight">
+                    Manage Categories
+                  </h3>
+                  <p className={`text-[11px] font-sans mt-0.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                    Create, edit, or delete personal shelf categories
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsCategorySheetOpen(false)}
+                aria-label="Close"
+                className={`min-h-[36px] min-w-[36px] flex items-center justify-center rounded-full transition-colors cursor-pointer ${
+                  isDark ? 'text-stone-400 hover:text-stone-100 hover:bg-stone-800' : 'text-stone-500 hover:text-stone-900 hover:bg-stone-100'
+                }`}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Create New Category Placeholder Row */}
+            <div className="mb-4">
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  placeholder="Create new category..."
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && newCategoryName.trim()) {
+                      setCategoriesList(prev => [...prev, newCategoryName.trim()]);
+                      setNewCategoryName('');
+                    }
+                  }}
+                  className={`flex-1 text-xs px-3 py-2 rounded-xl border outline-none transition-colors ${
+                    isDark
+                      ? 'bg-stone-900/80 border-stone-800 text-stone-100 placeholder-stone-500 focus:border-amber-400'
+                      : 'bg-stone-50 border-stone-200 text-stone-900 placeholder-stone-400 focus:border-stone-400'
+                  }`}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (newCategoryName.trim()) {
+                      setCategoriesList(prev => [...prev, newCategoryName.trim()]);
+                      setNewCategoryName('');
+                    }
+                  }}
+                  className={`min-h-[36px] px-3.5 text-xs font-semibold rounded-xl transition-transform active:scale-95 flex items-center gap-1 cursor-pointer shrink-0 ${
+                    isDark
+                      ? 'bg-amber-400 text-stone-950 hover:bg-amber-300'
+                      : 'bg-stone-900 text-stone-50 hover:bg-stone-800'
+                  }`}
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Categories List (Placeholders for Edit & Delete) */}
+            <div className="space-y-2 overflow-y-auto max-h-[36vh] pr-0.5 no-scrollbar">
+              {categoriesList.map((cat, idx) => (
+                <div
+                  key={idx}
+                  className={`p-2.5 rounded-xl border flex items-center justify-between transition-colors ${
+                    isDark
+                      ? 'bg-stone-900/40 border-stone-800/80 hover:border-stone-700'
+                      : 'bg-stone-50/60 border-stone-200/80 hover:border-stone-300'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <GripVertical className="w-3.5 h-3.5 text-stone-400 shrink-0 cursor-grab" />
+                    <span className="text-xs font-medium truncate">{cat}</span>
+                  </div>
+
+                  {/* Edit and Delete Actions */}
+                  <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                    <button
+                      type="button"
+                      aria-label={`Edit ${cat}`}
+                      title="Edit Category"
+                      onClick={() => {
+                        const renamed = prompt('Rename category:', cat);
+                        if (renamed && renamed.trim()) {
+                          setCategoriesList(prev => prev.map((c, i) => i === idx ? renamed.trim() : c));
+                        }
+                      }}
+                      className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
+                        isDark
+                          ? 'border-stone-800 text-stone-400 hover:text-stone-100 hover:bg-stone-800'
+                          : 'border-stone-200 text-stone-500 hover:text-stone-900 hover:bg-stone-100'
+                      }`}
+                    >
+                      <Pencil className="w-3 h-3" />
+                    </button>
+                    <button
+                      type="button"
+                      aria-label={`Delete ${cat}`}
+                      title="Delete Category"
+                      onClick={() => {
+                        setCategoriesList(prev => prev.filter((_, i) => i !== idx));
+                      }}
+                      className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
+                        isDark
+                          ? 'border-stone-800 text-stone-400 hover:text-rose-400 hover:border-rose-900/60 hover:bg-stone-800'
+                          : 'border-stone-200 text-stone-500 hover:text-rose-600 hover:border-rose-300 hover:bg-stone-100'
+                      }`}
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Bottom Done Action */}
+            <div className="mt-4 pt-3 border-t border-stone-200/50 dark:border-stone-800">
+              <button
+                type="button"
+                onClick={() => setIsCategorySheetOpen(false)}
+                className={`w-full py-2.5 text-xs font-semibold rounded-xl border transition-colors cursor-pointer ${
+                  isDark
+                    ? 'border-stone-800 bg-stone-900 text-stone-100 hover:bg-stone-800'
+                    : 'border-stone-300 bg-stone-100 text-stone-900 hover:bg-stone-200'
+                }`}
+              >
+                Done
+              </button>
             </div>
           </div>
         </div>

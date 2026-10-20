@@ -192,7 +192,6 @@ export const ScreenTableOfContents: React.FC<ScreenTableOfContentsProps> = ({
               </div>
 
               <div className="flex items-center gap-2 font-mono text-[10px] text-stone-400 shrink-0 ml-2">
-                <span>{ch.readTime}</span>
                 {ch.isCompleted && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />}
                 {ch.isCurrent && (
                   <span className="w-2 h-2 rounded-full bg-amber-600 animate-pulse" />

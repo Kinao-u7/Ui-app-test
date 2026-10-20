@@ -49,6 +49,17 @@
   background: rgba(160, 150, 140, 0.45);
 }
 
+/* Completely hide visible scrollbars when scrolling categories */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
 /* Reader paper drop-cap */
 .drop-cap::first-letter {
   font-family: 'Playfair Display', Georgia, serif;

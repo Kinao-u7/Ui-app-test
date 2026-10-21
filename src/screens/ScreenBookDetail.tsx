@@ -14,7 +14,8 @@ import {
   Headphones,
   Sparkles,
   Library,
-  ChevronRight
+  ChevronRight,
+  ArrowUpDown
 } from 'lucide-react';
 import { Book } from '../data/novelData';
 
@@ -40,6 +41,7 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
   const [isSynopsisExpanded, setIsSynopsisExpanded] = useState(false);
   const [isDownloaded, setIsDownloaded] = useState(false);
   const [downloadedChapters, setDownloadedChapters] = useState<Record<number, boolean>>({});
+  const [chapterSortAsc, setChapterSortAsc] = useState(true);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -89,6 +91,10 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
   // Filter out any webnovel, lightnovel, or ongoing tags as requested
   const displayTags = (book.tags || [book.genre]).filter(
     (tag) => !/web\s*novel|light\s*novel|ongoing/i.test(tag)
+  );
+
+  const displayedChapters = [...book.chapters].sort((a, b) =>
+    chapterSortAsc ? a.id - b.id : b.id - a.id
   );
 
   return (
@@ -239,12 +245,12 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
         </div>
       </div>
 
-      {/* Primary Action Button Row: Read button 60% and Download button 40% */}
-      <div className="px-5 py-2 relative z-10 flex items-center gap-2.5">
+      {/* Primary Action Button Row: Read button 65% and Download button 35%, less rounded */}
+      <div className="px-5 py-2 relative z-10 flex items-center gap-2.5 w-full">
         <button
           type="button"
           onClick={() => onOpenReader(book)}
-          className={`w-[60%] flex-[6] min-h-[46px] text-xs font-semibold rounded-2xl transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 shadow-lg cursor-pointer ${
+          className={`w-[65%] flex-[65] basis-[65%] min-h-[46px] text-xs font-semibold rounded-lg transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 shadow-sm cursor-pointer ${
             isDark
               ? 'bg-amber-400 text-black hover:bg-amber-300 shadow-amber-950/20'
               : 'bg-stone-900 text-white hover:bg-stone-800 shadow-stone-400/30'
@@ -257,7 +263,7 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
         <button
           type="button"
           onClick={handleDownloadAll}
-          className={`w-[40%] flex-[4] min-h-[46px] px-3 rounded-2xl text-xs font-medium flex items-center justify-center gap-1.5 border transition-all duration-200 active:scale-[0.98] cursor-pointer ${
+          className={`w-[35%] flex-[35] basis-[35%] min-h-[46px] px-2.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 border transition-all duration-200 active:scale-[0.98] cursor-pointer ${
             isDownloaded
               ? 'bg-emerald-950/30 border-emerald-500/40 text-emerald-400'
               : isDark
@@ -301,16 +307,42 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
       {/* Chapter Index Sequence */}
       <section className="px-5 pt-6 relative z-10">
         <div className="flex items-center justify-between mb-3">
-          <h3 className={`text-[11px] font-mono uppercase tracking-widest font-medium ${isDark ? 'text-stone-500' : 'text-stone-400'}`}>
-            Chapter Index
-          </h3>
-          <span className={`text-[11px] font-mono tabular-nums ${isDark ? 'text-stone-500' : 'text-stone-400'}`}>
-            {book.totalChapters || book.chapters.length} Chapters
-          </span>
+          <div className="flex items-center gap-2">
+            <h3 className={`text-sm font-serif font-semibold tracking-tight ${isDark ? 'text-stone-100' : 'text-stone-900'}`}>
+              Chapters
+            </h3>
+            <span className="opacity-40 text-xs font-mono">•</span>
+            <span className={`text-xs font-mono tabular-nums font-medium ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+              {book.totalChapters || book.chapters.length}
+            </span>
+          </div>
+
+          {/* Sort button on other end */}
+          <button
+            type="button"
+            onClick={() => {
+              setChapterSortAsc((prev) => !prev);
+              showToast(chapterSortAsc ? 'Sorted: Newest chapters first' : 'Sorted: First chapters first');
+            }}
+            aria-label="Sort chapters"
+            title={chapterSortAsc ? 'Sort: Oldest first' : 'Sort: Newest first'}
+            className={`min-h-[30px] px-2.5 rounded-lg border flex items-center gap-1.5 transition-all text-xs font-mono cursor-pointer ${
+              !chapterSortAsc
+                ? isDark
+                  ? 'border-amber-400 text-amber-400 bg-amber-400/10'
+                  : 'border-amber-600 text-amber-800 bg-amber-50 font-medium'
+                : isDark
+                ? 'border-stone-800 bg-stone-900/60 text-stone-400 hover:text-stone-200 hover:border-stone-700'
+                : 'border-stone-300/80 bg-stone-100/70 text-stone-600 hover:text-stone-900 hover:border-stone-400'
+            }`}
+          >
+            <ArrowUpDown className="w-3.5 h-3.5" />
+            <span>{chapterSortAsc ? 'Oldest' : 'Newest'}</span>
+          </button>
         </div>
 
         <div className="space-y-1">
-          {book.chapters.map((ch) => {
+          {displayedChapters.map((ch) => {
             const isChDownloaded = isDownloaded || !!downloadedChapters[ch.id];
             return (
               <div

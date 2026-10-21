@@ -16,7 +16,16 @@ app.use(express.json({ limit: '25mb' }));
 
 // Initialize Google GenAI
 const apiKey = process.env.GEMINI_API_KEY || '';
-const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
+const ai = apiKey
+  ? new GoogleGenAI({
+      apiKey,
+      httpOptions: {
+        headers: {
+          'User-Agent': 'aistudio-build',
+        },
+      },
+    })
+  : null;
 
 // Route 1: Generate Novel Scene or Book Cover Image
 app.post('/api/generate-image', async (req, res) => {
@@ -38,7 +47,7 @@ app.post('/api/generate-image', async (req, res) => {
 
     try {
       const response = await ai.models.generateContent({
-        model: 'gemini-3.1-flash-image',
+        model: 'gemini-3.1-flash-lite-image',
         contents: {
           parts: [{ text: enhancedPrompt }],
         },

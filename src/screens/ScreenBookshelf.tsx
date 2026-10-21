@@ -21,7 +21,9 @@ import {
   Pencil,
   Trash2,
   Plus,
-  GripVertical
+  GripVertical,
+  ArrowLeft,
+  CheckCheck
 } from 'lucide-react';
 import { Book, NOVEL_BOOKS } from '../data/novelData';
 
@@ -403,54 +405,7 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
           </div>
         )}
 
-        {/* Notifications Drawer */}
-        {isNotificationsOpen && (
-          <div
-            className={`mx-4 mt-2 mb-2 p-3 rounded-xl border shadow-lg transition-all ${
-              isDark ? 'bg-[#141416] border-stone-800 text-stone-100' : 'bg-white border-stone-200 text-stone-900'
-            }`}
-          >
-            <div className="flex items-center justify-between pb-2 mb-2 border-b border-stone-200/50 dark:border-stone-800">
-              <span className="text-xs font-serif font-semibold">Library Alerts</span>
-              {unreadCount > 0 && (
-                <button
-                  type="button"
-                  onClick={markAllNotificationsRead}
-                  className="text-[10px] font-mono text-amber-500 hover:underline flex items-center gap-1 cursor-pointer"
-                >
-                  <Check className="w-3 h-3" /> Mark all read
-                </button>
-              )}
-            </div>
-            <div className="space-y-2">
-              {notifications.map((n) => (
-                <div
-                  key={n.id}
-                  className={`p-2 rounded-lg text-xs flex items-start justify-between ${
-                    n.unread
-                      ? isDark
-                        ? 'bg-amber-950/20 border border-amber-900/40'
-                        : 'bg-amber-50/70 border border-amber-200/60'
-                      : isDark
-                      ? 'bg-stone-900/50'
-                      : 'bg-stone-50'
-                  }`}
-                >
-                  <div>
-                    <div className="font-medium text-[11px] flex items-center gap-1.5">
-                      {n.unread && <span className="w-1.5 h-1.5 bg-amber-500 rounded-full" />}
-                      <span>{n.title}</span>
-                    </div>
-                    <p className={`text-[10px] mt-0.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
-                      {n.desc}
-                    </p>
-                  </div>
-                  <span className="text-[9px] font-mono opacity-60 shrink-0 ml-2">{n.time}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+
 
         {/* CONDITIONAL RENDERING: Empty Library State vs. Populated Library */}
         {isLibraryEmpty ? (
@@ -735,9 +690,9 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
                         {book.title}
                       </h4>
 
-                      {/* Number of chapters under the title */}
+                      {/* Chapter progress under the title */}
                       <span className={`text-[10px] font-mono mt-0.5 block ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
-                        {book.totalChapters || book.chapters.length} Chapters
+                        CH 7/9
                       </span>
                     </div>
                   ))}
@@ -793,7 +748,7 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
                             by {book.author}
                           </p>
                           <span className={`text-[10px] font-mono mt-0.5 block ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
-                            {book.totalChapters || book.chapters.length} Chapters
+                            CH 7/9
                           </span>
                         </div>
                       </div>
@@ -974,11 +929,11 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
             {/* Grab Handle */}
             <div className={`w-10 h-1 rounded-full mx-auto mb-4 ${isDark ? 'bg-stone-700' : 'bg-stone-300'}`} />
 
-            {/* Header */}
-            <div className="flex items-start justify-between mb-4 pb-3 border-b border-stone-200/50 dark:border-stone-800">
-              <div className="flex items-center gap-3">
+            {/* Header: Restored Category Icon with Categories title */}
+            <div className="flex items-center justify-between mb-4 pb-3 border-b border-stone-200/50 dark:border-stone-800">
+              <div className="flex items-center gap-2.5">
                 <div
-                  className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border ${
+                  className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border ${
                     isDark
                       ? 'bg-amber-400/10 border-amber-400/30 text-amber-400'
                       : 'bg-amber-100 border-amber-200 text-amber-800'
@@ -986,17 +941,9 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
                 >
                   <SlidersHorizontal className="w-4 h-4 stroke-[2]" />
                 </div>
-                <div>
-                  <span className={`text-[10px] font-mono uppercase tracking-widest block mb-0.5 ${isDark ? 'text-amber-400' : 'text-stone-400'}`}>
-                    Shelf Organization
-                  </span>
-                  <h3 className="text-base font-serif font-semibold tracking-tight">
-                    Manage Categories
-                  </h3>
-                  <p className={`text-[11px] font-sans mt-0.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
-                    Create, edit, or delete personal shelf categories
-                  </p>
-                </div>
+                <h3 className="text-base font-serif font-semibold tracking-tight">
+                  Categories
+                </h3>
               </div>
 
               <button
@@ -1011,12 +958,12 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
               </button>
             </div>
 
-            {/* Create New Category Placeholder Row */}
+            {/* Create New Category Row - 80/20 ratio, longer/taller and slightly rounded square add button */}
             <div className="mb-4">
-              <div className="flex items-center gap-2">
+              <div className="flex items-stretch gap-2.5 w-full">
                 <input
                   type="text"
-                  placeholder="Create new category..."
+                  placeholder="Add new category..."
                   value={newCategoryName}
                   onChange={(e) => setNewCategoryName(e.target.value)}
                   onKeyDown={(e) => {
@@ -1025,10 +972,10 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
                       setNewCategoryName('');
                     }
                   }}
-                  className={`flex-1 text-xs px-3 py-2 rounded-xl border outline-none transition-colors ${
+                  className={`flex-[8] basis-[80%] min-w-0 text-xs sm:text-sm px-4 py-3 min-h-[50px] rounded-xl border outline-none transition-all ${
                     isDark
-                      ? 'bg-stone-900/80 border-stone-800 text-stone-100 placeholder-stone-500 focus:border-amber-400'
-                      : 'bg-stone-50 border-stone-200 text-stone-900 placeholder-stone-400 focus:border-stone-400'
+                      ? 'bg-stone-900/80 border-stone-800 text-stone-100 placeholder-stone-500 focus:border-amber-400 focus:bg-stone-900'
+                      : 'bg-stone-50 border-stone-200 text-stone-900 placeholder-stone-400 focus:border-stone-400 focus:bg-white'
                   }`}
                 />
                 <button
@@ -1039,13 +986,15 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
                       setNewCategoryName('');
                     }
                   }}
-                  className={`min-h-[36px] px-3.5 text-xs font-semibold rounded-xl transition-transform active:scale-95 flex items-center gap-1 cursor-pointer shrink-0 ${
+                  aria-label="Add category"
+                  title="Add category"
+                  className={`flex-[2] basis-[20%] min-h-[50px] rounded-xl border transition-all active:scale-95 flex items-center justify-center gap-1.5 font-semibold text-xs cursor-pointer shrink-0 ${
                     isDark
-                      ? 'bg-amber-400 text-stone-950 hover:bg-amber-300'
-                      : 'bg-stone-900 text-stone-50 hover:bg-stone-800'
+                      ? 'bg-amber-400 border-amber-400 text-stone-950 hover:bg-amber-300 shadow-sm'
+                      : 'bg-stone-900 border-stone-900 text-stone-50 hover:bg-stone-800 shadow-sm'
                   }`}
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-4 h-4 stroke-[2.5]" />
                   <span>Add</span>
                 </button>
               </div>
@@ -1106,21 +1055,126 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      )}
 
-            {/* Bottom Done Action */}
-            <div className="mt-4 pt-3 border-t border-stone-200/50 dark:border-stone-800">
+      {/* Full Screen Notifications View */}
+      {isNotificationsOpen && (
+        <div
+          className={`fixed inset-0 z-50 flex flex-col animate-in fade-in duration-200 ${
+            isDark ? 'bg-[#0A0A0A] text-stone-100' : 'bg-[#FFFFFF] text-stone-900'
+          }`}
+        >
+          {/* Top Bar Header */}
+          <header
+            className={`px-4 pt-3 pb-3 border-b sticky top-0 backdrop-blur-md z-20 flex items-center justify-between ${
+              isDark
+                ? 'bg-[#0A0A0A]/95 border-neutral-900 text-stone-100'
+                : 'bg-[#FFFFFF]/95 border-stone-200/80 text-stone-900'
+            }`}
+          >
+            <div className="flex items-center gap-3">
               <button
                 type="button"
-                onClick={() => setIsCategorySheetOpen(false)}
-                className={`w-full py-2.5 text-xs font-semibold rounded-xl border transition-colors cursor-pointer ${
+                onClick={() => setIsNotificationsOpen(false)}
+                aria-label="Back to library"
+                className={`min-h-[38px] min-w-[38px] flex items-center justify-center rounded-xl border transition-colors cursor-pointer ${
                   isDark
-                    ? 'border-stone-800 bg-stone-900 text-stone-100 hover:bg-stone-800'
-                    : 'border-stone-300 bg-stone-100 text-stone-900 hover:bg-stone-200'
+                    ? 'border-stone-800 bg-stone-900/80 text-stone-200 hover:text-stone-100 hover:border-stone-700'
+                    : 'border-stone-300/80 bg-stone-50 text-stone-700 hover:text-stone-950 hover:border-stone-400'
                 }`}
               >
-                Done
+                <ArrowLeft className="w-4 h-4 stroke-[2]" />
               </button>
+              <div>
+                <h1 className="text-lg font-serif font-semibold tracking-tight">
+                  Notifications
+                </h1>
+                <span className={`text-[10px] font-mono block ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                  {unreadCount > 0 ? `${unreadCount} unread alert${unreadCount > 1 ? 's' : ''}` : 'All caught up'}
+                </span>
+              </div>
             </div>
+
+            {unreadCount > 0 && (
+              <button
+                type="button"
+                onClick={markAllNotificationsRead}
+                className={`min-h-[34px] px-3 text-xs font-medium rounded-lg border transition-all flex items-center gap-1.5 cursor-pointer ${
+                  isDark
+                    ? 'border-amber-400/40 text-amber-400 bg-amber-400/10 hover:bg-amber-400/20'
+                    : 'border-amber-600/40 text-amber-800 bg-amber-50 hover:bg-amber-100'
+                }`}
+              >
+                <CheckCheck className="w-3.5 h-3.5 stroke-[2]" />
+                <span>Mark all read</span>
+              </button>
+            )}
+          </header>
+
+          {/* Notifications Scrollable List */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
+            {notifications.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <div
+                  className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-3 border ${
+                    isDark ? 'bg-stone-900 border-stone-800 text-stone-500' : 'bg-stone-100 border-stone-200 text-stone-400'
+                  }`}
+                >
+                  <Bell className="w-6 h-6 stroke-[1.8]" />
+                </div>
+                <h3 className="font-serif text-sm font-semibold mb-1">No Notifications</h3>
+                <p className={`text-xs max-w-xs ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                  You're up to date! Chapter releases and library alerts will appear here.
+                </p>
+              </div>
+            ) : (
+              notifications.map((n) => (
+                <div
+                  key={n.id}
+                  onClick={() => {
+                    setNotifications(prev => prev.map(item => item.id === n.id ? { ...item, unread: false } : item));
+                  }}
+                  className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-start gap-3.5 ${
+                    n.unread
+                      ? isDark
+                        ? 'bg-amber-950/20 border-amber-900/50 text-stone-100 shadow-2xs'
+                        : 'bg-amber-50/80 border-amber-200 text-stone-900 shadow-2xs'
+                      : isDark
+                      ? 'bg-stone-900/40 border-stone-800/80 text-stone-300 hover:bg-stone-900/70'
+                      : 'bg-stone-50/80 border-stone-200/80 text-stone-700 hover:bg-stone-100'
+                  }`}
+                >
+                  <div
+                    className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border mt-0.5 ${
+                      n.unread
+                        ? isDark
+                          ? 'bg-amber-400/20 border-amber-400/40 text-amber-400'
+                          : 'bg-amber-100 border-amber-300 text-amber-800'
+                        : isDark
+                        ? 'bg-stone-800 border-stone-700 text-stone-400'
+                        : 'bg-white border-stone-200 text-stone-500'
+                    }`}
+                  >
+                    <Bell className="w-4 h-4 stroke-[1.8]" />
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <div className="font-semibold text-xs flex items-center gap-1.5 truncate">
+                        {n.unread && <span className="w-2 h-2 bg-amber-500 rounded-full shrink-0" />}
+                        <span className="truncate">{n.title}</span>
+                      </div>
+                      <span className="text-[10px] font-mono opacity-60 shrink-0">{n.time}</span>
+                    </div>
+                    <p className={`text-xs leading-relaxed ${isDark ? 'text-stone-300' : 'text-stone-600'}`}>
+                      {n.desc}
+                    </p>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       )}

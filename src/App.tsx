@@ -8,19 +8,17 @@ import { ScreenReader } from './screens/ScreenReader';
 import { ScreenTableOfContents } from './screens/ScreenTableOfContents';
 import { ScreenBookshelf } from './screens/ScreenBookshelf';
 import { ScreenAudioPlayer } from './screens/ScreenAudioPlayer';
-import { ScreenSceneStudio } from './screens/ScreenSceneStudio';
 import { ScreenSettings } from './screens/ScreenSettings';
 import { ScreenDownloads } from './screens/ScreenDownloads';
 import { DesignSystemInspector } from './components/DesignSystemInspector';
 import { Smartphone, LayoutGrid, Palette, Sun, Moon, Settings, ArrowDownToLine, Compass, Library } from 'lucide-react';
 
-export type ScreenId = 'explore' | 'detail' | 'reader' | 'contents' | 'shelf' | 'audio' | 'studio' | 'settings' | 'downloads';
+export type ScreenId = 'explore' | 'detail' | 'reader' | 'contents' | 'shelf' | 'audio' | 'settings' | 'downloads';
 
 export default function App() {
   // Navigation & Screen State - default to 'shelf' (Library)
   const [currentScreen, setCurrentScreen] = useState<ScreenId>('shelf');
   const [selectedBook, setSelectedBook] = useState<Book>(NOVEL_BOOKS[0]);
-  const [studioPrompt, setStudioPrompt] = useState<string>('');
   
   // Dark Mode State with localStorage persistence
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
@@ -61,7 +59,6 @@ export default function App() {
         return 'shelf';
       case 'explore':
       case 'detail':
-      case 'studio':
         return 'explore';
       case 'downloads':
       case 'audio':
@@ -88,13 +85,6 @@ export default function App() {
         setCurrentScreen('settings');
         break;
     }
-  };
-
-  const handleApplyCoverToBook = (imageUrl: string) => {
-    setBooks(prev =>
-      prev.map(b => (b.id === selectedBook.id ? { ...b, coverImage: imageUrl } : b))
-    );
-    setSelectedBook(prev => ({ ...prev, coverImage: imageUrl }));
   };
 
   const handleSaveQuote = (quote: {
@@ -204,10 +194,6 @@ export default function App() {
               book={selectedBook}
               onBack={() => setCurrentScreen('shelf')}
               onOpenTableOfContents={() => setCurrentScreen('contents')}
-              onOpenStudioWithPrompt={(p) => {
-                setStudioPrompt(p);
-                setCurrentScreen('studio');
-              }}
               onSaveQuote={handleSaveQuote}
               isDark={isDarkMode}
               onToggleDarkMode={toggleDarkMode}
@@ -236,7 +222,6 @@ export default function App() {
                 setSelectedBook(book);
                 setCurrentScreen('audio');
               }}
-              onOpenStudio={() => setCurrentScreen('studio')}
               isDark={isDarkMode}
               onToggleDarkMode={toggleDarkMode}
             />
@@ -255,10 +240,6 @@ export default function App() {
               book={selectedBook}
               onBack={() => setCurrentScreen('reader')}
               onSelectChapter={() => setCurrentScreen('reader')}
-              onSelectQuote={(q) => {
-                setStudioPrompt(q.text);
-                setCurrentScreen('studio');
-              }}
               onDeleteQuote={handleDeleteQuote}
               isDark={isDarkMode}
             />
@@ -285,23 +266,6 @@ export default function App() {
               activeTab="downloads"
               isDark={isDarkMode}
               onSelectTab={handleBottomNavSelect}
-            />
-          </>
-        );
-
-      case 'studio':
-        return (
-          <>
-            <ScreenSceneStudio
-              initialPrompt={studioPrompt}
-              onBack={() => setCurrentScreen('explore')}
-              onApplyCoverToBook={handleApplyCoverToBook}
-              isDark={isDarkMode}
-            />
-            <MobileBottomNav
-              activeTab="explore"
-              onSelectTab={handleBottomNavSelect}
-              isDark={isDarkMode}
             />
           </>
         );
@@ -336,7 +300,6 @@ export default function App() {
                 setSelectedBook(book);
                 setCurrentScreen('audio');
               }}
-              onOpenStudio={() => setCurrentScreen('studio')}
               isDark={isDarkMode}
               onToggleDarkMode={toggleDarkMode}
             />
@@ -362,7 +325,6 @@ export default function App() {
     { id: 'detail', title: 'Novel Details', num: 6, desc: 'Web novel & light novel synopsis, chapters, source tags & discussions' },
     { id: 'contents', title: 'Index & Marginalia', num: 7, desc: 'Chapter timeline, saved quotes, and bookmarks' },
     { id: 'audio', title: 'Whisper Studio', num: 8, desc: 'Ambient soundscape and audiobook player' },
-    { id: 'studio', title: 'Scene Studio', num: 9, desc: 'Web novel cover and scene visualization laboratory' },
   ];
 
   return (
@@ -544,7 +506,7 @@ export default function App() {
             }`}
           >
             <LayoutGrid className="w-3.5 h-3.5" />
-            <span>All 9 Screens</span>
+            <span>All 8 Screens</span>
           </button>
         </div>
       </div>
@@ -606,7 +568,7 @@ export default function App() {
                 Complete UI Kit Specification
               </span>
               <h2 className={`font-serif text-3xl font-bold tracking-tight ${isDarkMode ? 'text-stone-100' : 'text-stone-900'}`}>
-                All Nine Screens of Folio
+                All Eight Screens of Folio
               </h2>
               <p className={`text-xs mt-2 leading-relaxed ${isDarkMode ? 'text-stone-400' : 'text-stone-600'}`}>
                 Complete minimalist novel reading ecosystem featuring 4-tab mobile bottom navigation (Library, Sources, Downloads, Settings), empty library state, offline vault, and e-ink reader.

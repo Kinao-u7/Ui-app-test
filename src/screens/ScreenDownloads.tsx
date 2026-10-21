@@ -10,7 +10,9 @@ import {
   ArrowRight,
   RefreshCw,
   FolderDown,
-  Layers
+  Layers,
+  CloudDownload,
+  Play
 } from 'lucide-react';
 import { Book, NOVEL_BOOKS } from '../data/novelData';
 
@@ -127,7 +129,7 @@ export const ScreenDownloads: React.FC<ScreenDownloadsProps> = ({
               isDark ? 'bg-stone-900 border-stone-800 text-amber-400' : 'bg-stone-100 border-stone-200 text-stone-700'
             }`}
           >
-            <FolderDown className="w-7 h-7 stroke-[1.6]" />
+            <CloudDownload className="w-7 h-7 stroke-[1.6]" />
           </div>
 
           <span
@@ -318,7 +320,7 @@ export const ScreenDownloads: React.FC<ScreenDownloadsProps> = ({
                           : 'bg-stone-900 text-stone-50 hover:bg-stone-800'
                       }`}
                     >
-                      <BookOpen className="w-3 h-3" />
+                      <Play className="w-3 h-3 fill-current" />
                       <span>Read</span>
                     </button>
                     <button

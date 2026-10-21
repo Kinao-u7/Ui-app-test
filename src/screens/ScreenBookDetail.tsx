@@ -2,20 +2,22 @@ import React, { useState } from 'react';
 import {
   ArrowLeft,
   MoreVertical,
-  Bookmark,
+  RotateCw,
+  Heart,
   Star,
   BookOpen,
   CheckCircle2,
-  Download,
   CloudDownload,
   Check,
   X,
   Share2,
   Headphones,
-  Sparkles,
-  Library,
+  Globe,
+  MessageSquare,
+  Languages,
   ChevronRight,
-  ArrowUpDown
+  ArrowUpDown,
+  Play
 } from 'lucide-react';
 import { Book } from '../data/novelData';
 
@@ -24,7 +26,6 @@ interface ScreenBookDetailProps {
   onBack: () => void;
   onOpenReader: (book: Book) => void;
   onOpenAudio?: (book: Book) => void;
-  onOpenStudio?: () => void;
   isDark?: boolean;
   onToggleDarkMode?: () => void;
 }
@@ -34,7 +35,6 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
   onBack,
   onOpenReader,
   onOpenAudio,
-  onOpenStudio,
   isDark = false,
 }) => {
   const [isSaved, setIsSaved] = useState(true);
@@ -256,7 +256,7 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
               : 'bg-stone-900 text-white hover:bg-stone-800 shadow-stone-400/30'
           }`}
         >
-          <BookOpen className="w-4 h-4 stroke-[2.2]" />
+          <Play className="w-3.5 h-3.5 fill-current" />
           <span>Read</span>
         </button>
 
@@ -271,7 +271,7 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
               : 'bg-stone-200/70 border-stone-300 text-stone-800 hover:bg-stone-200'
           }`}
         >
-          <Download className="w-3.5 h-3.5" />
+          <CloudDownload className="w-4 h-4 stroke-[2]" />
           <span className="truncate">{isDownloaded ? 'Downloaded' : 'Download'}</span>
         </button>
       </div>
@@ -382,7 +382,7 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
                       title={isChDownloaded ? 'Downloaded' : 'Download chapter'}
                       aria-label={`Download ${ch.title}`}
                     >
-                      <Download className="w-3.5 h-3.5" />
+                      <CloudDownload className="w-3.5 h-3.5 stroke-[2]" />
                     </button>
                   )}
                 </div>

@@ -1,5 +1,4 @@
-import React from 'react';
-import { Library, Globe, ArrowDownToLine, Settings } from 'lucide-react';
+import { BookOpen, Compass, CloudDownload, SlidersHorizontal } from 'lucide-react';
 
 export type NavTab = 'shelf' | 'explore' | 'downloads' | 'settings';
 
@@ -15,10 +14,10 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   isDark = false
 }) => {
   const tabs = [
-    { id: 'shelf' as NavTab, label: 'Library', icon: Library },
-    { id: 'explore' as NavTab, label: 'Sources', icon: Globe },
-    { id: 'downloads' as NavTab, label: 'Downloads', icon: ArrowDownToLine },
-    { id: 'settings' as NavTab, label: 'Settings', icon: Settings },
+    { id: 'shelf' as NavTab, label: 'Library', icon: BookOpen },
+    { id: 'explore' as NavTab, label: 'Discover', icon: Compass },
+    { id: 'downloads' as NavTab, label: 'Downloads', icon: CloudDownload },
+    { id: 'settings' as NavTab, label: 'Settings', icon: SlidersHorizontal },
   ];
 
   return (

@@ -23,7 +23,9 @@ import {
   Plus,
   GripVertical,
   ArrowLeft,
-  CheckCheck
+  CheckCheck,
+  Play,
+  ArrowUpDown
 } from 'lucide-react';
 import { Book, NOVEL_BOOKS } from '../data/novelData';
 
@@ -245,7 +247,7 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
                   : 'border-stone-300/80 bg-white/80 text-stone-700 hover:border-stone-400 hover:text-stone-900'
               }`}
             >
-              <ArrowDownWideNarrow className="w-3.5 h-3.5" />
+              <ArrowUpDown className="w-3.5 h-3.5" />
             </button>
 
             {/* 2. Updates Button */}
@@ -416,7 +418,7 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
                 isDark ? 'bg-stone-900/80 border-stone-800 text-amber-400' : 'bg-stone-100 border-stone-200 text-stone-700'
               }`}
             >
-              <Library className="w-7 h-7 stroke-[1.75]" />
+              <BookOpen className="w-7 h-7 stroke-[1.75]" />
             </div>
 
             <h2 className="font-serif text-lg font-semibold tracking-tight mb-1.5">
@@ -585,7 +587,7 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
                               : 'bg-stone-900 text-stone-50 hover:bg-stone-800'
                           }`}
                         >
-                          <BookOpen className="w-3 h-3" />
+                          <Play className="w-3 h-3 fill-current" />
                           <span>Resume Reading</span>
                         </button>
                       </div>

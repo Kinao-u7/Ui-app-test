@@ -17,7 +17,6 @@ import { Book, READER_THEMES, ReaderTheme } from '../data/novelData';
 interface ScreenReaderProps {
   book: Book;
   onBack: () => void;
-  onOpenStudioWithPrompt?: (prompt: string) => void;
   onOpenTableOfContents: () => void;
   onSaveQuote?: (quote: {
     text: string;

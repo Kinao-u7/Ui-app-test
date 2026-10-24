@@ -341,12 +341,15 @@ export const ScreenExplore: React.FC<ScreenExploreProps> = ({
         <header
           className={`px-4 pt-3.5 pb-3 border-b sticky top-0 backdrop-blur-md z-20 flex items-center justify-between ${
             isDark
-              ? 'bg-[#0A0A0A]/90 border-neutral-900 text-stone-100'
+              ? 'bg-[#0A0A0A]/90 border-stone-800/60 text-stone-100'
               : 'bg-[#FFFFFF]/90 border-stone-200/70 text-stone-900'
           }`}
         >
           <div>
-            <h1 className="text-xl font-serif font-semibold tracking-tight">
+            <span className="text-[10px] font-sans font-semibold uppercase tracking-wider block text-amber-600 dark:text-amber-400 leading-none mb-0.5">
+              Catalogs & Crawlers
+            </span>
+            <h1 className={`text-xl font-sans font-semibold tracking-tight ${isDark ? 'text-stone-100' : 'text-stone-950'}`}>
               Sources
             </h1>
           </div>
@@ -451,7 +454,7 @@ export const ScreenExplore: React.FC<ScreenExploreProps> = ({
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5">
                       <h3
-                        className={`font-serif text-xs font-semibold truncate ${
+                        className={`font-sans text-[13.5px] font-semibold tracking-tight truncate ${
                           isDark ? 'text-stone-100' : 'text-stone-950'
                         }`}
                       >

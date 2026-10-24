@@ -1,4 +1,4 @@
-import { BookOpen, Compass, CloudDownload, SlidersHorizontal } from 'lucide-react';
+import { BookOpen, Compass, ArrowDownToLine, SlidersHorizontal } from 'lucide-react';
 
 export type NavTab = 'shelf' | 'explore' | 'downloads' | 'settings';
 
@@ -16,7 +16,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   const tabs = [
     { id: 'shelf' as NavTab, label: 'Library', icon: BookOpen },
     { id: 'explore' as NavTab, label: 'Discover', icon: Compass },
-    { id: 'downloads' as NavTab, label: 'Downloads', icon: CloudDownload },
+    { id: 'downloads' as NavTab, label: 'Queue', icon: ArrowDownToLine },
     { id: 'settings' as NavTab, label: 'Settings', icon: SlidersHorizontal },
   ];
 
@@ -62,8 +62,8 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
               )}
             </div>
             <span
-              className={`text-[9.5px] tracking-tight mt-1 text-center truncate w-full px-0.5 leading-none ${
-                isActive ? 'font-semibold' : 'font-normal'
+              className={`text-[10px] font-sans tracking-tight mt-1 text-center truncate w-full px-0.5 leading-none ${
+                isActive ? 'font-semibold' : 'font-medium'
               }`}
             >
               {tab.label}

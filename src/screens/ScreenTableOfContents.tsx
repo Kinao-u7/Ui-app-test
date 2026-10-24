@@ -78,10 +78,10 @@ export const ScreenTableOfContents: React.FC<ScreenTableOfContentsProps> = ({
         </button>
 
         <div className="text-center">
-          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 block">
+          <span className="text-[10px] font-sans font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400 block leading-none mb-0.5">
             Folio Index
           </span>
-          <h2 className="text-xs font-serif font-semibold tracking-tight truncate max-w-[190px]">
+          <h2 className="text-xs font-sans font-semibold tracking-tight truncate max-w-[190px]">
             {book.title}
           </h2>
         </div>
@@ -98,7 +98,7 @@ export const ScreenTableOfContents: React.FC<ScreenTableOfContentsProps> = ({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search chapters, quotes, or notes..."
-            className={`w-full text-xs rounded-xl pl-8 pr-3 py-2 outline-none transition-colors border ${
+            className={`w-full text-xs font-sans rounded-xl pl-8 pr-3 py-2 outline-none transition-colors border ${
               isDark
                 ? 'bg-stone-900/80 border-stone-800 text-stone-100 placeholder:text-stone-500 focus:border-amber-400'
                 : 'bg-stone-100/80 border-stone-200/80 text-stone-900 placeholder:text-stone-400 focus:border-stone-800'
@@ -110,7 +110,7 @@ export const ScreenTableOfContents: React.FC<ScreenTableOfContentsProps> = ({
       {/* Segmented Control Tabs */}
       <div className="px-5 py-2">
         <div
-          className={`p-1 rounded-xl grid grid-cols-3 gap-1 text-xs font-medium ${
+          className={`p-1 rounded-xl grid grid-cols-3 gap-1 text-xs font-sans font-medium ${
             isDark ? 'bg-stone-900 border border-stone-800' : 'bg-stone-200/60'
           }`}
         >
@@ -182,7 +182,7 @@ export const ScreenTableOfContents: React.FC<ScreenTableOfContentsProps> = ({
                   0{ch.id}
                 </span>
                 <div className="min-w-0">
-                  <h3 className="text-xs font-semibold font-serif truncate">
+                  <h3 className="text-xs font-semibold font-sans truncate">
                     {ch.title}
                   </h3>
                   <p className={`text-[11px] font-sans mt-0.5 truncate ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>

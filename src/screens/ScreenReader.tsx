@@ -17,6 +17,7 @@ import { Book, READER_THEMES, ReaderTheme } from '../data/novelData';
 interface ScreenReaderProps {
   book: Book;
   onBack: () => void;
+  onOpenStudioWithPrompt?: (prompt: string) => void;
   onOpenTableOfContents: () => void;
   onSaveQuote?: (quote: {
     text: string;
@@ -172,10 +173,10 @@ export const ScreenReader: React.FC<ScreenReaderProps> = ({
           onClick={onOpenTableOfContents}
           className="text-center truncate px-2 max-w-[200px] hover:opacity-80 transition-opacity cursor-pointer"
         >
-          <span className="text-[10px] font-mono uppercase tracking-widest block opacity-60">
+          <span className="text-[10px] font-sans font-semibold uppercase tracking-wider block opacity-70 leading-none mb-0.5">
             Chapter 0{chapter.id}
           </span>
-          <span className="text-xs font-serif font-medium truncate block">
+          <span className="text-xs font-sans font-medium truncate block">
             {chapter.title}
           </span>
         </button>

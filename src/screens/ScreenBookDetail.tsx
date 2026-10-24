@@ -17,7 +17,10 @@ import {
   Languages,
   ChevronRight,
   ArrowUpDown,
-  Play
+  Play,
+  Bookmark,
+  Sparkles,
+  Library
 } from 'lucide-react';
 import { Book } from '../data/novelData';
 
@@ -26,6 +29,7 @@ interface ScreenBookDetailProps {
   onBack: () => void;
   onOpenReader: (book: Book) => void;
   onOpenAudio?: (book: Book) => void;
+  onOpenStudio?: () => void;
   isDark?: boolean;
   onToggleDarkMode?: () => void;
 }
@@ -35,6 +39,7 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
   onBack,
   onOpenReader,
   onOpenAudio,
+  onOpenStudio,
   isDark = false,
 }) => {
   const [isSaved, setIsSaved] = useState(true);
@@ -129,7 +134,7 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
         </button>
 
         <span
-          className={`text-xs font-serif font-medium tracking-tight truncate max-w-[190px] opacity-80 ${
+          className={`text-xs font-sans font-medium tracking-tight truncate max-w-[190px] opacity-80 ${
             isDark ? 'text-stone-200' : 'text-stone-800'
           }`}
         >
@@ -198,7 +203,7 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
             {displayTags.slice(0, 3).map((tag, i) => (
               <span
                 key={i}
-                className={`text-[9px] font-mono uppercase px-2 py-0.5 rounded-md border font-medium ${
+                className={`text-[9.5px] font-sans uppercase tracking-wider px-2 py-0.5 rounded-md border font-semibold ${
                   isDark
                     ? 'bg-white/5 border-white/10 text-stone-300'
                     : 'bg-stone-200/70 border-stone-300 text-stone-700'
@@ -219,8 +224,8 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
           </h1>
 
           {/* Author Name Under Title */}
-          <p className={`text-xs font-medium mt-1 ${isDark ? 'text-stone-400' : 'text-stone-600'}`}>
-            by <span className="font-semibold">{book.author}</span>
+          <p className={`text-xs font-sans font-medium mt-1 ${isDark ? 'text-stone-400' : 'text-stone-600'}`}>
+            by <span className="font-semibold text-stone-200 dark:text-stone-100">{book.author}</span>
           </p>
 
           {/* Compact Stats Pill: rating and CH X/X in same size just a few pixels higher */}
@@ -250,7 +255,7 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
         <button
           type="button"
           onClick={() => onOpenReader(book)}
-          className={`w-[65%] flex-[65] basis-[65%] min-h-[46px] text-xs font-semibold rounded-lg transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 shadow-sm cursor-pointer ${
+          className={`w-[65%] flex-[65] basis-[65%] min-h-[46px] text-xs font-sans font-semibold rounded-lg transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 shadow-sm cursor-pointer ${
             isDark
               ? 'bg-amber-400 text-black hover:bg-amber-300 shadow-amber-950/20'
               : 'bg-stone-900 text-white hover:bg-stone-800 shadow-stone-400/30'
@@ -263,7 +268,7 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
         <button
           type="button"
           onClick={handleDownloadAll}
-          className={`w-[35%] flex-[35] basis-[35%] min-h-[46px] px-2.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 border transition-all duration-200 active:scale-[0.98] cursor-pointer ${
+          className={`w-[35%] flex-[35] basis-[35%] min-h-[46px] px-2.5 rounded-lg text-xs font-sans font-medium flex items-center justify-center gap-1.5 border transition-all duration-200 active:scale-[0.98] cursor-pointer ${
             isDownloaded
               ? 'bg-emerald-950/30 border-emerald-500/40 text-emerald-400'
               : isDark
@@ -279,13 +284,13 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
       {/* Synopsis Section: drop down arrow removed */}
       <section className="px-5 pt-4 relative z-10">
         <div className="flex items-center justify-between mb-1.5">
-          <h3 className={`text-[11px] font-mono uppercase tracking-widest font-medium ${isDark ? 'text-stone-500' : 'text-stone-400'}`}>
+          <h3 className={`text-[11px] font-sans font-semibold uppercase tracking-wider ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
             Synopsis
           </h3>
         </div>
 
         <p
-          className={`text-xs leading-relaxed font-serif transition-colors ${
+          className={`text-xs leading-relaxed font-sans transition-colors ${
             isDark ? 'text-stone-300' : 'text-stone-700'
           } ${isSynopsisExpanded ? '' : 'line-clamp-4'}`}
         >
@@ -296,7 +301,7 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
         <button
           type="button"
           onClick={() => setIsSynopsisExpanded(!isSynopsisExpanded)}
-          className={`text-[11px] font-medium hover:underline mt-1.5 inline-block cursor-pointer ${
+          className={`text-[11px] font-sans font-medium hover:underline mt-1.5 inline-block cursor-pointer ${
             isDark ? 'text-amber-400' : 'text-stone-900'
           }`}
         >
@@ -308,7 +313,7 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
       <section className="px-5 pt-6 relative z-10">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <h3 className={`text-sm font-serif font-semibold tracking-tight ${isDark ? 'text-stone-100' : 'text-stone-900'}`}>
+            <h3 className={`text-sm font-sans font-semibold tracking-tight ${isDark ? 'text-stone-100' : 'text-stone-900'}`}>
               Chapters
             </h3>
             <span className="opacity-40 text-xs font-mono">•</span>
@@ -326,7 +331,7 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
             }}
             aria-label="Sort chapters"
             title={chapterSortAsc ? 'Sort: Oldest first' : 'Sort: Newest first'}
-            className={`min-h-[30px] px-2.5 rounded-lg border flex items-center gap-1.5 transition-all text-xs font-mono cursor-pointer ${
+            className={`min-h-[30px] px-2.5 rounded-lg border flex items-center gap-1.5 transition-all text-xs font-sans font-medium cursor-pointer ${
               !chapterSortAsc
                 ? isDark
                   ? 'border-amber-400 text-amber-400 bg-amber-400/10'
@@ -359,7 +364,7 @@ export const ScreenBookDetail: React.FC<ScreenBookDetailProps> = ({
                     {ch.id < 10 ? `0${ch.id}` : ch.id}
                   </span>
                   <div className="min-w-0">
-                    <h4 className={`text-xs font-serif font-medium truncate ${isDark ? 'text-stone-200' : 'text-stone-900'}`}>
+                    <h4 className={`text-xs font-sans font-medium truncate ${isDark ? 'text-stone-200' : 'text-stone-900'}`}>
                       {ch.title}
                     </h4>
                   </div>

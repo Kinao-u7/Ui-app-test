@@ -218,13 +218,13 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
         >
           <div>
             <span
-              className={`text-[10px] font-mono uppercase tracking-widest block ${
-                isDark ? 'text-amber-400' : 'text-stone-400'
+              className={`text-[10px] font-sans font-semibold uppercase tracking-wider block leading-none mb-0.5 ${
+                isDark ? 'text-amber-400' : 'text-amber-600'
               }`}
             >
               Personal Archive
             </span>
-            <h1 className="text-xl font-serif font-semibold tracking-tight">
+            <h1 className={`text-xl font-sans font-semibold tracking-tight ${isDark ? 'text-stone-100' : 'text-stone-950'}`}>
               Library
             </h1>
           </div>
@@ -510,7 +510,7 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
             {!searchQuery && activeTab !== 'finished' && currentReadingBook && (
               <section className="px-4 pt-1.5 pb-2">
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className={`text-[10px] uppercase font-mono tracking-widest ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                  <span className={`text-[11px] font-sans font-semibold uppercase tracking-wider ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
                     Continue Reading
                   </span>
                 </div>
@@ -601,8 +601,8 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
             <section className="px-4 pt-2 flex-1">
               {/* Header with novels count, removed sort button between count and grid/list */}
               <div className="flex items-center justify-between mb-2">
-                <span className={`text-[10px] font-mono uppercase tracking-wider ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
-                  Library Novels ({sortedBooks.length})
+                <span className={`text-[11px] font-sans font-semibold uppercase tracking-wider ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                  Library Novels <span className="font-mono text-xs tabular-nums font-medium">({sortedBooks.length})</span>
                 </span>
 
                 {/* Compact Grid / List Switcher */}
@@ -684,7 +684,7 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
 
                       {/* Novel Name (2 lines) */}
                       <h4
-                        className={`font-serif text-[11px] sm:text-xs font-semibold leading-snug line-clamp-2 min-h-[2rem] transition-colors ${
+                        className={`font-sans text-[12px] font-semibold leading-snug line-clamp-2 min-h-[2rem] transition-colors ${
                           isDark ? 'text-stone-200 group-hover:text-amber-400' : 'text-stone-900 group-hover:underline'
                         }`}
                         title={book.title}
@@ -693,7 +693,7 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
                       </h4>
 
                       {/* Chapter progress under the title */}
-                      <span className={`text-[10px] font-mono mt-0.5 block ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                      <span className={`text-[10px] font-mono tabular-nums mt-0.5 block ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
                         CH 7/9
                       </span>
                     </div>
@@ -740,16 +740,16 @@ export const ScreenBookshelf: React.FC<ScreenBookshelfProps> = ({
                         {/* Novel Information */}
                         <div className="min-w-0 flex-1">
                           <h4
-                            className={`font-serif text-xs font-semibold truncate ${
+                            className={`font-sans text-xs font-semibold truncate ${
                               isDark ? 'text-stone-100' : 'text-stone-900'
                             }`}
                           >
                             {book.title}
                           </h4>
-                          <p className={`text-[11px] truncate mt-0.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                          <p className={`text-[11px] font-sans truncate mt-0.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
                             by {book.author}
                           </p>
-                          <span className={`text-[10px] font-mono mt-0.5 block ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                          <span className={`text-[10px] font-mono tabular-nums mt-0.5 block ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
                             CH 7/9
                           </span>
                         </div>

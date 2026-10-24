@@ -64,10 +64,10 @@ export const ScreenAudioPlayer: React.FC<ScreenAudioPlayerProps> = ({
         </button>
 
         <div className="text-center">
-          <span className="text-[10px] font-mono uppercase tracking-widest text-amber-500 block">
-            Whisper Studio · Audiobook
+          <span className="text-[10px] font-sans font-semibold uppercase tracking-wider text-amber-500 block leading-none mb-0.5">
+            Audiobook Narration
           </span>
-          <h2 className="text-xs font-serif font-semibold tracking-tight text-stone-200 truncate max-w-[190px]">
+          <h2 className="text-xs font-sans font-semibold tracking-tight text-stone-200 truncate max-w-[190px]">
             {book.title}
           </h2>
         </div>
@@ -100,13 +100,13 @@ export const ScreenAudioPlayer: React.FC<ScreenAudioPlayerProps> = ({
         </div>
 
         <div className="mt-4">
-          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 block">
+          <span className="text-[10px] font-sans font-semibold uppercase tracking-wider text-stone-400 block mb-0.5">
             Chapter 03 · Salt and Shadow
           </span>
-          <h1 className="font-serif text-lg font-semibold tracking-tight text-white mt-0.5">
+          <h1 className="font-serif text-lg font-semibold tracking-tight text-white">
             {book.title}
           </h1>
-          <p className="text-xs text-stone-400 mt-0.5">
+          <p className="text-xs font-sans text-stone-400 mt-0.5">
             Narrated by {book.audioNarrator}
           </p>
         </div>
@@ -209,7 +209,7 @@ export const ScreenAudioPlayer: React.FC<ScreenAudioPlayerProps> = ({
 
       {/* Synchronized Live Transcript Spotlight */}
       <div className="px-6 pt-4">
-        <span className="text-[10px] font-mono uppercase tracking-wider text-stone-400 block mb-2">
+        <span className="text-[11px] font-sans font-semibold uppercase tracking-wider text-stone-400 block mb-2">
           Synchronized Text Follower
         </span>
         <div className="bg-stone-900/80 border border-stone-800 rounded-xl p-3.5 space-y-2">
